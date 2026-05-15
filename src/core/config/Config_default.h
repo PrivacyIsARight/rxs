@@ -66,11 +66,6 @@ R"===(
         "max-threads-hint": 100,
         "asm": true,
     },
-    "cuda": {
-        "enabled": false,
-        "loader": null,
-        "nvml": true,
-    },
     "log-file": null,
     "pools": [
         {
