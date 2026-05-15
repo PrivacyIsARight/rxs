@@ -52,9 +52,6 @@ public:
     static const char *kAsm;
 #   endif
 
-#   ifdef RXS_ALGO_ARGON2
-#   endif
-
     CpuConfig() = default;
 
     bool isHwAES() const;
