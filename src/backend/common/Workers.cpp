@@ -27,11 +27,6 @@
 
 
 
-#ifdef RXS_FEATURE_CUDA
-#   include "backend/cuda/CudaWorker.h"
-#endif
-
-
 #ifdef RXS_FEATURE_BENCHMARK
 #   include "backend/common/benchmark/Benchmark.h"
 #endif
@@ -253,18 +248,6 @@ rxs::IWorker *rxs::Workers<CpuLaunchData>::create(Thread<CpuLaunchData> *handle)
 template class Workers<CpuLaunchData>;
 
 
-
-
-#ifdef RXS_FEATURE_CUDA
-template<>
-rxs::IWorker *rxs::Workers<CudaLaunchData>::create(Thread<CudaLaunchData> *handle)
-{
-    return new CudaWorker(handle->id(), handle->config());
-}
-
-
-template class Workers<CudaLaunchData>;
-#endif
 
 
 } // namespace rxs
