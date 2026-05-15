@@ -66,10 +66,7 @@ rxs::BenchConfig::BenchConfig(uint32_t size, const String &id, const rapidjson::
     m_rotation(rotation)
 {
     auto f = m_algorithm.family();
-    if (!m_algorithm.isValid() || (f != Algorithm::RANDOM_X
-#       ifdef RXS_ALGO_GHOSTRIDER
-#       endif
-        )) {
+    if (!m_algorithm.isValid() || f != Algorithm::RANDOM_X) {
         m_algorithm = Algorithm::RX_0;
     }
 
