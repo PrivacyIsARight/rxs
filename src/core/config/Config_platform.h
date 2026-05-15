@@ -126,13 +126,6 @@ static const option options[] = {
     { "randomx-cache-qos",     0, nullptr, IConfig::RandomXCacheQoSKey    },
     { "cache-qos",             0, nullptr, IConfig::RandomXCacheQoSKey    },
 #   endif
-#   ifdef RXS_FEATURE_OPENCL
-    { "opencl",                0, nullptr, IConfig::OclKey                },
-    { "opencl-devices",        1, nullptr, IConfig::OclDevicesKey         },
-    { "opencl-platform",       1, nullptr, IConfig::OclPlatformKey        },
-    { "opencl-loader",         1, nullptr, IConfig::OclLoaderKey          },
-    { "opencl-no-cache",       0, nullptr, IConfig::OclCacheKey           },
-#   endif
 #   ifdef RXS_FEATURE_CUDA
     { "cuda",                  0, nullptr, IConfig::CudaKey               },
     { "cuda-loader",           1, nullptr, IConfig::CudaLoaderKey         },

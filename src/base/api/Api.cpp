@@ -205,9 +205,6 @@ void rxs::Api::exec(IApiRequest &request)
 #       ifdef RXS_FEATURE_TLS
         features.PushBack("tls", allocator);
 #       endif
-#       ifdef RXS_FEATURE_OPENCL
-        features.PushBack("opencl", allocator);
-#       endif
 #       ifdef RXS_FEATURE_CUDA
         features.PushBack("cuda", allocator);
 #       endif

@@ -111,14 +111,6 @@ const char *rxs::Tags::nvidia()
 #endif
 
 
-#ifdef RXS_FEATURE_OPENCL
-const char *rxs::Tags::opencl()
-{
-    static const char *tag = MAGENTA_BG_BOLD(WHITE_BOLD_S " opencl  ");
-
-    return tag;
-}
-#endif
 
 
 #ifdef RXS_FEATURE_PROFILING

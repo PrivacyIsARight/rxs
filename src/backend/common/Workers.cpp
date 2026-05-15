@@ -25,9 +25,6 @@
 #include "base/tools/Chrono.h"
 
 
-#ifdef RXS_FEATURE_OPENCL
-#   include "backend/opencl/OclWorker.h"
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA
@@ -256,16 +253,6 @@ rxs::IWorker *rxs::Workers<CpuLaunchData>::create(Thread<CpuLaunchData> *handle)
 template class Workers<CpuLaunchData>;
 
 
-#ifdef RXS_FEATURE_OPENCL
-template<>
-rxs::IWorker *rxs::Workers<OclLaunchData>::create(Thread<OclLaunchData> *handle)
-{
-    return new OclWorker(handle->id(), handle->config());
-}
-
-
-template class Workers<OclLaunchData>;
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA

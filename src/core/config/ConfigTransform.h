@@ -40,7 +40,6 @@ private:
     void transformBenchmark(rapidjson::Document &doc, int key, const char *arg);
 #   endif
 
-    bool m_opencl           = false;
     int64_t m_affinity      = -1;
     uint64_t m_intensity    = 1;
     uint64_t m_threads      = 0;

@@ -66,13 +66,6 @@ R"===(
         "max-threads-hint": 100,
         "asm": true,
     },
-    "opencl": {
-        "enabled": false,
-        "cache": true,
-        "loader": null,
-        "platform": "AMD",
-        "adl": true,
-    },
     "cuda": {
         "enabled": false,
         "loader": null,

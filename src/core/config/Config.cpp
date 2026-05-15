@@ -36,9 +36,6 @@
 #endif
 
 
-#ifdef RXS_FEATURE_OPENCL
-#   include "backend/opencl/OclConfig.h"
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA
@@ -56,9 +53,6 @@ const char *Config::kPauseOnBattery     = "pause-on-battery";
 const char *Config::kPauseOnActive      = "pause-on-active";
 
 
-#ifdef RXS_FEATURE_OPENCL
-const char *Config::kOcl                = "opencl";
-#endif
 
 #ifdef RXS_FEATURE_CUDA
 const char *Config::kCuda               = "cuda";
@@ -84,9 +78,6 @@ public:
     RxConfig rx;
 #   endif
 
-#   ifdef RXS_FEATURE_OPENCL
-    OclConfig cl;
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     CudaConfig cuda;
@@ -144,12 +135,6 @@ uint32_t rxs::Config::idleTime() const
 }
 
 
-#ifdef RXS_FEATURE_OPENCL
-const rxs::OclConfig &rxs::Config::cl() const
-{
-    return d_ptr->cl;
-}
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA
@@ -190,11 +175,6 @@ bool rxs::Config::isShouldSave() const
         return false;
     }
 
-#   ifdef RXS_FEATURE_OPENCL
-    if (cl().isShouldSave()) {
-        return true;
-    }
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     if (cuda().isShouldSave()) {
@@ -223,11 +203,6 @@ bool rxs::Config::read(const IJsonReader &reader, const char *fileName)
     }
 #   endif
 
-#   ifdef RXS_FEATURE_OPENCL
-    if (!pools().isBenchmark()) {
-        d_ptr->cl.read(reader.getValue(kOcl));
-    }
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     if (!pools().isBenchmark()) {
@@ -272,9 +247,6 @@ void rxs::Config::getJSON(rapidjson::Document &doc) const
 
     doc.AddMember(StringRef(CpuConfig::kField),         cpu().toJSON(doc), allocator);
 
-#   ifdef RXS_FEATURE_OPENCL
-    doc.AddMember(StringRef(kOcl),                      cl().toJSON(doc), allocator);
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     doc.AddMember(StringRef(kCuda),                     cuda().toJSON(doc), allocator);

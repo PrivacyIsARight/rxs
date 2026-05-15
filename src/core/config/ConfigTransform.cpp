@@ -72,11 +72,6 @@ void rxs::ConfigTransform::finalize(rapidjson::Document &doc)
         doc[CpuConfig::kField].AddMember(StringRef(kAsterisk), profile, doc.GetAllocator());
     }
 
-#   ifdef RXS_FEATURE_OPENCL
-    if (m_opencl) {
-        set(doc, Config::kOcl, kEnabled, true);
-    }
-#   endif
 }
 
 
@@ -154,28 +149,6 @@ void rxs::ConfigTransform::transform(rapidjson::Document &doc, int key, const ch
         return set(doc, CpuConfig::kField, CpuConfig::kHugePagesJit, true);
 #   endif
 
-#   ifdef RXS_FEATURE_OPENCL
-    case IConfig::OclKey: /* --opencl */
-        m_opencl = true;
-        break;
-
-    case IConfig::OclCacheKey: /* --opencl-no-cache */
-        return set(doc, Config::kOcl, "cache", false);
-
-    case IConfig::OclLoaderKey: /* --opencl-loader */
-        return set(doc, Config::kOcl, "loader", arg);
-
-    case IConfig::OclDevicesKey: /* --opencl-devices */
-        m_opencl = true;
-        return set(doc, Config::kOcl, "devices-hint", arg);
-
-    case IConfig::OclPlatformKey: /* --opencl-platform */
-        if (strlen(arg) < 3) {
-            return set(doc, Config::kOcl, "platform", static_cast<uint64_t>(strtol(arg, nullptr, 10)));
-        }
-
-        return set(doc, Config::kOcl, "platform", arg);
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     case IConfig::CudaKey: /* --cuda */

@@ -216,17 +216,7 @@ public:
 
 const char *rxs::backend_tag(uint32_t backend)
 {
-#   ifdef RXS_FEATURE_OPENCL
-    if (backend == Nonce::OPENCL) {
-        return ocl_tag();
-    }
-#   endif
 
-#   ifdef RXS_FEATURE_CUDA
-    if (backend == Nonce::CUDA) {
-        return cuda_tag();
-    }
-#   endif
 
     return Tags::cpu();
 }

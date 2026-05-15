@@ -21,9 +21,6 @@
 #include "backend/cpu/CpuThreads.h"
 
 
-#ifdef RXS_FEATURE_OPENCL
-#   include "backend/opencl/OclThreads.h"
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA
@@ -155,9 +152,6 @@ namespace rxs {
 
 template class Threads<CpuThreads>;
 
-#ifdef RXS_FEATURE_OPENCL
-template class Threads<OclThreads>;
-#endif
 
 #ifdef RXS_FEATURE_CUDA
 template class Threads<CudaThreads>;

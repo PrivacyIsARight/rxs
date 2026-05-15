@@ -35,7 +35,7 @@ if (WITH_RANDOMX AND WITH_BENCHMARK)
 endif()
 
 
-if (WITH_OPENCL OR WITH_CUDA)
+if (WITH_CUDA)
     list(APPEND HEADERS_BACKEND_COMMON
         src/backend/common/HashrateInterpolator.h
         src/backend/common/GpuWorker.h

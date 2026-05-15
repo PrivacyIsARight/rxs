@@ -105,15 +105,6 @@ static inline const std::string &usage()
     u += "      --randomx-cache-qos       enable Cache QoS\n";
 #   endif
 
-#   ifdef RXS_FEATURE_OPENCL
-    u += "\nOpenCL backend:\n";
-    u += "      --opencl                  enable OpenCL mining backend\n";
-    u += "      --opencl-devices=N        comma separated list of OpenCL devices to use\n";
-    u += "      --opencl-platform=N       OpenCL platform index or name\n";
-    u += "      --opencl-loader=PATH      path to OpenCL-ICD-Loader (OpenCL.dll or libOpenCL.so)\n";
-    u += "      --opencl-no-cache         disable OpenCL cache\n";
-    u += "      --print-platforms         print available OpenCL platforms and exit\n";
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     u += "\nCUDA backend:\n";

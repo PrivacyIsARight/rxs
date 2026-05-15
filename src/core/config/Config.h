@@ -47,9 +47,6 @@ public:
     static const char *kPauseOnBattery;
     static const char *kPauseOnActive;
 
-#   ifdef RXS_FEATURE_OPENCL
-    static const char *kOcl;
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     static const char *kCuda;
@@ -72,9 +69,6 @@ public:
     const CpuConfig &cpu() const;
     uint32_t idleTime() const;
 
-#   ifdef RXS_FEATURE_OPENCL
-    const OclConfig &cl() const;
-#   endif
 
 #   ifdef RXS_FEATURE_CUDA
     const CudaConfig &cuda() const;

@@ -27,9 +27,6 @@
 #include "backend/cpu/CpuLaunchData.h"
 
 
-#ifdef RXS_FEATURE_OPENCL
-#   include "backend/opencl/OclLaunchData.h"
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA
@@ -93,11 +90,6 @@ IWorker *Workers<CpuLaunchData>::create(Thread<CpuLaunchData> *handle);
 extern template class Workers<CpuLaunchData>;
 
 
-#ifdef RXS_FEATURE_OPENCL
-template<>
-IWorker *Workers<OclLaunchData>::create(Thread<OclLaunchData> *handle);
-extern template class Workers<OclLaunchData>;
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA

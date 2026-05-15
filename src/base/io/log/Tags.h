@@ -54,9 +54,6 @@ public:
     static const char *nvidia();
 #   endif
 
-#   ifdef RXS_FEATURE_OPENCL
-    static const char *opencl();
-#   endif
 
 #   ifdef RXS_FEATURE_PROFILING
     static const char* profiler();

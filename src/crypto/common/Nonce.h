@@ -31,8 +31,6 @@ class Nonce
 public:
     enum Backend : uint32_t {
         CPU,
-        OPENCL,
-        CUDA,
         MAX
     };
 
@@ -52,7 +50,7 @@ public:
 private:
     static std::atomic<bool> m_paused;
     static std::atomic<uint64_t> m_sequence[MAX];
-    static std::atomic<uint64_t> m_nonces[2];
+    static std::atomic<uint64_t> m_nonces[MAX];
 };
 
 

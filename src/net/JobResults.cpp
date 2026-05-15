@@ -40,7 +40,7 @@
 
 
 
-#if defined(RXS_FEATURE_OPENCL) || defined(RXS_FEATURE_CUDA)
+#ifdef RXS_FEATURE_CUDA
 #   include "base/tools/Baton.h"
 #   include "crypto/common/VirtualMemory.h"
 #endif
@@ -56,7 +56,7 @@
 namespace rxs {
 
 
-#if defined(RXS_FEATURE_OPENCL) || defined(RXS_FEATURE_CUDA)
+#ifdef RXS_FEATURE_CUDA
 class JobBundle
 {
 public:
@@ -300,7 +300,7 @@ void rxs::JobResults::submit(const JobResult &result)
 }
 
 
-#if defined(RXS_FEATURE_OPENCL) || defined(RXS_FEATURE_CUDA)
+#ifdef RXS_FEATURE_CUDA
 void rxs::JobResults::submit(const Job &job, uint32_t *results, size_t count, uint32_t device_index)
 {
     if (handler) {

@@ -37,9 +37,6 @@ const char *backend_tag(uint32_t backend);
 const char *cpu_tag();
 
 
-#ifdef RXS_FEATURE_OPENCL
-const char *ocl_tag();
-#endif
 
 
 #ifdef RXS_FEATURE_CUDA

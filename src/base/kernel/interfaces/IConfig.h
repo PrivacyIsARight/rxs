@@ -113,18 +113,12 @@ public:
         RandomXCacheQoSKey   = 1040,
 
         // xmrig amd
-        OclPlatformKey       = 1400,
         OclAffinityKey       = 1401,
-        OclDevicesKey        = 1402,
         OclLaunchKey         = 1403,
-        OclCacheKey          = 1404,
         OclPrintKey          = 1405,
-        OclLoaderKey         = 1406,
         OclSridedIndexKey    = 1407,
         OclMemChunkKey       = 1408,
         OclUnrollKey         = 1409,
-        OclCompModeKey       = 1410,
-        OclKey               = 1411,
 
         // xmrig-proxy
         AccessLogFileKey     = 'A',
