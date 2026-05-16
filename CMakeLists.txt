@@ -96,41 +96,23 @@ if (WITH_HWLOC)
         )
 endif()
 
-if (RXS_OS_WIN)
-    list(APPEND SOURCES_OS
-        res/app.rc
-        src/App_win.cpp
-        src/crypto/common/VirtualMemory_win.cpp
-        )
+list(APPEND SOURCES_OS
+    src/App_unix.cpp
+    src/crypto/common/VirtualMemory_unix.cpp
+    )
 
-    set(EXTRA_LIBS ws2_32 psapi iphlpapi userenv dbghelp)
-elseif (RXS_OS_APPLE)
+if (RXS_OS_ANDROID)
+    set(EXTRA_LIBS pthread rt dl log)
+elseif (RXS_OS_LINUX)
     list(APPEND SOURCES_OS
-        src/App_unix.cpp
-        src/crypto/common/VirtualMemory_unix.cpp
+        src/crypto/common/LinuxMemory.h
+        src/crypto/common/LinuxMemory.cpp
         )
-
-    find_library(IOKIT_LIBRARY IOKit)
-    find_library(CORESERVICES_LIBRARY CoreServices)
-    set(EXTRA_LIBS ${IOKIT_LIBRARY} ${CORESERVICES_LIBRARY})
+    set(EXTRA_LIBS pthread rt dl)
+elseif (RXS_OS_FREEBSD)
+    set(EXTRA_LIBS kvm pthread)
 else()
-    list(APPEND SOURCES_OS
-        src/App_unix.cpp
-        src/crypto/common/VirtualMemory_unix.cpp
-        )
-
-    if (RXS_OS_ANDROID)
-        set(EXTRA_LIBS pthread rt dl log)
-    elseif (RXS_OS_LINUX)
-        list(APPEND SOURCES_OS
-            src/crypto/common/LinuxMemory.h
-            src/crypto/common/LinuxMemory.cpp
-            )
-
-        set(EXTRA_LIBS pthread rt dl)
-    elseif (RXS_OS_FREEBSD)
-        set(EXTRA_LIBS kvm pthread)
-    endif()
+    set(EXTRA_LIBS pthread)
 endif()
 
 add_definitions(-DRXS_MINER_PROJECT -DRXS_JSON_SINGLE_LINE_ARRAY)
@@ -164,17 +146,6 @@ endif()
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${RXS_ASM_SOURCES})
 target_link_libraries(${CMAKE_PROJECT_NAME} ${RXS_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY})
-
-if (WIN32)
-    if (NOT ARM_TARGET)
-        add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/bin/WinRing0/WinRing0x64.sys" $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>)
-    endif()
-
-    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/scripts/benchmark_1M.cmd" $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>)
-    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/scripts/benchmark_10M.cmd" $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>)
-    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/scripts/pool_mine_example.cmd" $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>)
-    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/scripts/solo_mine_example.cmd" $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>)
-endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES Clang AND CMAKE_BUILD_TYPE STREQUAL Release AND NOT CMAKE_GENERATOR STREQUAL Xcode)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>")
