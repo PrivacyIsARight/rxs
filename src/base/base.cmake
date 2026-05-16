@@ -144,27 +144,11 @@ set(SOURCES_BASE
     src/base/tools/Timer.cpp
    )
 
-
-if (WIN32)
-    set(SOURCES_OS
-        src/base/io/json/Json_win.cpp
-        src/base/kernel/Platform_win.cpp
-        src/base/kernel/Process_win.cpp
-        )
-elseif (APPLE)
-    set(SOURCES_OS
-        src/base/io/json/Json_unix.cpp
-        src/base/kernel/Platform_mac.cpp
-        src/base/kernel/Process_unix.cpp
-        )
-else()
-    set(SOURCES_OS
-        src/base/io/json/Json_unix.cpp
-        src/base/kernel/Platform_unix.cpp
-        src/base/kernel/Process_unix.cpp
-        )
-endif()
-
+set(SOURCES_OS
+    src/base/io/json/Json_unix.cpp
+    src/base/kernel/Platform_unix.cpp
+    src/base/kernel/Process_unix.cpp
+    )
 
 if (WITH_HWLOC)
     list(APPEND SOURCES_OS
@@ -172,13 +156,10 @@ if (WITH_HWLOC)
         )
 endif()
 
-
-if (NOT WIN32)
-    CHECK_INCLUDE_FILE (syslog.h HAVE_SYSLOG_H)
-    if (HAVE_SYSLOG_H)
-        add_definitions(/DHAVE_SYSLOG_H)
-        set(SOURCES_SYSLOG src/base/io/log/backends/SysLog.h src/base/io/log/backends/SysLog.cpp)
-    endif()
+CHECK_INCLUDE_FILE (syslog.h HAVE_SYSLOG_H)
+if (HAVE_SYSLOG_H)
+    add_definitions(/DHAVE_SYSLOG_H)
+    set(SOURCES_SYSLOG src/base/io/log/backends/SysLog.h src/base/io/log/backends/SysLog.cpp)
 endif()
 
 
