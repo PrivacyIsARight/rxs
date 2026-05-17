@@ -75,10 +75,8 @@ void rxs::Watcher::reload()
 {
     m_listener->onFileChanged(m_path);
 
-#   ifndef _WIN32
     uv_fs_event_stop(m_fsEvent);
     start();
-#   endif
 }
 
 
