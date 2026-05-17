@@ -25,17 +25,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 .intel_syntax noprefix
-#if defined(__APPLE__)
-.text
-#define DECL(x) _##x
-#else
 .section .text
 #define DECL(x) x
-#endif
-
-#if defined(__WIN32__) || defined(__CYGWIN__)
-#define WINABI
-#endif
 
 .global DECL(randomx_prefetch_scratchpad)
 .global DECL(randomx_prefetch_scratchpad_bmi2)
