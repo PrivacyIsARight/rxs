@@ -412,9 +412,6 @@ inline void* rx_aligned_alloc(size_t size, size_t align) {
     return 0;
 };
 #   define rx_aligned_free(a) free(a)
-#elif defined(HAVE_ALIGNED_MALLOC)
-#   define rx_aligned_alloc(a, b) _aligned_malloc(a, b)
-#   define rx_aligned_free(a) _aligned_free(a)
 #else
 #   define rx_aligned_alloc(a, b) malloc(a)
 #   define rx_aligned_free(a) free(a)
@@ -569,9 +566,6 @@ inline void* rx_aligned_alloc(size_t size, size_t align) {
     return 0;
 };
 #   define rx_aligned_free(a) free(a)
-#elif defined(HAVE_ALIGNED_MALLOC)
-#   define rx_aligned_alloc(a, b) _aligned_malloc(a, b)
-#   define rx_aligned_free(a) _aligned_free(a)
 #else
 #   define rx_aligned_alloc(a, b) malloc(a)
 #   define rx_aligned_free(a) free(a)
