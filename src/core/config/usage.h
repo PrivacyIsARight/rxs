@@ -92,9 +92,6 @@ static inline const std::string &usage()
 #   endif
     u += "      --asm=ASM                 ASM optimizations, possible values: auto, none, intel, ryzen, bulldozer\n";
 
-#   if defined(__x86_64__) || defined(_M_AMD64)
-#   endif
-
 #   ifdef RXS_ALGO_RANDOMX
     u += "      --randomx-init=N          threads count to initialize RandomX dataset\n";
     u += "      --randomx-no-numa         disable NUMA support for RandomX\n";
@@ -134,9 +131,6 @@ static inline const std::string &usage()
 
     u += "  -l, --log-file=FILE           log all output to a file\n";
     u += "      --print-time=N            print hashrate report every N seconds\n";
-#   if defined(RXS_FEATURE_ADL)
-    u += "      --health-print-time=N     print health report every N seconds\n";
-#   endif
     u += "      --no-color                disable colored output\n";
     u += "      --verbose                 verbose output\n";
 
@@ -152,10 +146,6 @@ static inline const std::string &usage()
     u += "      --export-topology         export hwloc topology to a XML file and exit\n";
 #   endif
 
-#   ifdef RXS_OS_WIN
-    u += "      --title                   set custom console window title\n";
-    u += "      --no-title                disable setting console window title\n";
-#   endif
     u += "      --pause-on-battery        pause mine on battery power\n";
     u += "      --pause-on-active=N       pause mine when the user is active (resume after N seconds of last activity)\n";
 
@@ -177,5 +167,7 @@ static inline const std::string &usage()
     return u;
 }
 
+
+} // namespace rxs
 
 } // namespace rxs
