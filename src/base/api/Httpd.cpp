@@ -38,11 +38,6 @@ namespace rxs {
 
 static const char *kAuthorization = "authorization";
 
-#ifdef _WIN32
-static const char *favicon = nullptr;
-static size_t faviconSize  = 0;
-#endif
-
 } // namespace rxs
 
 
@@ -94,18 +89,6 @@ bool rxs::Httpd::start()
 
     m_port = static_cast<uint16_t>(rc);
 
-#   ifdef _WIN32
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast, performance-no-int-to-ptr)
-    HRSRC src = FindResource(nullptr, MAKEINTRESOURCE(1), RT_ICON);
-    if (src != nullptr) {
-        HGLOBAL res = LoadResource(nullptr, src);
-        if (res != nullptr) {
-            favicon     = static_cast<const char *>(LockResource(res));
-            faviconSize = SizeofResource(nullptr, src);
-        }
-    }
-#   endif
-
     return true;
 }
 
@@ -140,15 +123,6 @@ void rxs::Httpd::onHttpData(const HttpData &data)
     }
 
     if (data.method == HTTP_GET && data.url == "/favicon.ico") {
-#       ifdef _WIN32
-        if (favicon != nullptr) {
-            HttpResponse response(data.id());
-            response.setHeader(HttpData::kContentType, "image/x-icon");
-
-            return response.end(favicon, faviconSize);
-        }
-#       endif
-
         return HttpResponse(data.id(), 404 /* NOT_FOUND */).end();
     }
 
