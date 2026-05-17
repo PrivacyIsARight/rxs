@@ -22,11 +22,9 @@
 #include "base/kernel/config/Title.h"
 #include "base/tools/Handle.h"
 
-
 #include <cstdio>
 
-
-rxs::ConsoleLog::ConsoleLog(const Title &title)
+rxs::ConsoleLog::ConsoleLog(const Title &)
 {
     if (!isSupported()) {
         Log::setColors(false);
@@ -41,31 +39,12 @@ rxs::ConsoleLog::ConsoleLog(const Title &title)
     }
 
     uv_tty_set_mode(m_tty, UV_TTY_MODE_NORMAL);
-
-#   ifdef RXS_OS_WIN
-    m_stream = reinterpret_cast<uv_stream_t*>(m_tty);
-
-    HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-    if (handle != INVALID_HANDLE_VALUE) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, performance-no-int-to-ptr)
-        DWORD mode = 0;
-        if (GetConsoleMode(handle, &mode)) {
-           mode &= ~ENABLE_QUICK_EDIT_MODE;
-           SetConsoleMode(handle, mode | ENABLE_EXTENDED_FLAGS);
-        }
-    }
-
-    if (title.isEnabled()) {
-        SetConsoleTitleA(title.value());
-    }
-#   endif
 }
-
 
 rxs::ConsoleLog::~ConsoleLog()
 {
     Handle::close(m_tty);
 }
-
 
 void rxs::ConsoleLog::print(uint64_t, int, const char *line, size_t, size_t size, bool colors)
 {
@@ -73,37 +52,12 @@ void rxs::ConsoleLog::print(uint64_t, int, const char *line, size_t, size_t size
         return;
     }
 
-#   ifdef RXS_OS_WIN
-    uv_buf_t buf = uv_buf_init(const_cast<char *>(line), static_cast<unsigned int>(size));
-
-    if (!isWritable()) {
-        fputs(line, stdout);
-        fflush(stdout);
-    }
-    else {
-        uv_try_write(m_stream, &buf, 1);
-    }
-#   else
-    fputs(line, stdout);
+    fwrite(line, 1, size, stdout);
     fflush(stdout);
-#   endif
 }
-
 
 bool rxs::ConsoleLog::isSupported()
 {
     const uv_handle_type type = uv_guess_handle(1);
     return type == UV_TTY || type == UV_NAMED_PIPE;
 }
-
-
-#ifdef RXS_OS_WIN
-bool rxs::ConsoleLog::isWritable() const
-{
-    if (!m_stream || uv_is_writable(m_stream) != 1) {
-        return false;
-    }
-
-    return isSupported();
-}
-#endif
