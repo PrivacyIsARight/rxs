@@ -209,9 +209,7 @@ void JitCompilerA64::generateProgram(Program& program, ProgramConfiguration& con
 		memcpy(code + dst, code + src, 16);
 	}
 
-#	ifndef RXS_OS_APPLE
 	rxs::VirtualMemory::flushInstructionCache(reinterpret_cast<char*>(code + MainLoopBegin), codePos - MainLoopBegin);
-#	endif
 }
 
 void JitCompilerA64::generateProgramLight(Program& program, ProgramConfiguration& config, uint32_t datasetOffset)
@@ -310,9 +308,7 @@ void JitCompilerA64::generateProgramLight(Program& program, ProgramConfiguration
 	emit32(ARMV8A::ADD_IMM_LO | 2 | (2 << 5) | (imm_lo << 10), code, codePos);
 	emit32(ARMV8A::ADD_IMM_HI | 2 | (2 << 5) | (imm_hi << 10), code, codePos);
 
-#	ifndef RXS_OS_APPLE
 	rxs::VirtualMemory::flushInstructionCache(reinterpret_cast<char*>(code + MainLoopBegin), codePos - MainLoopBegin);
-#	endif
 }
 
 template<size_t N>
@@ -437,9 +433,7 @@ void JitCompilerA64::generateSuperscalarHash(SuperscalarProgram(&programs)[N])
 	memcpy(code + codePos, p1, p2 - p1);
 	codePos += p2 - p1;
 
-#	ifndef RXS_OS_APPLE
 	rxs::VirtualMemory::flushInstructionCache(reinterpret_cast<char*>(code + CodeSize), codePos - MainLoopBegin);
-#	endif
 }
 
 template void JitCompilerA64::generateSuperscalarHash(SuperscalarProgram(&programs)[RANDOMX_CACHE_MAX_ACCESSES]);
@@ -476,9 +470,7 @@ void JitCompilerA64::allocate(size_t size)
 
 	memcpy(code, reinterpret_cast<const void *>(randomx_program_aarch64), CodeSize);
 
-#	ifndef RXS_OS_APPLE
 	rxs::VirtualMemory::flushInstructionCache(reinterpret_cast<char*>(code), CodeSize);
-#	endif
 }
 
 
