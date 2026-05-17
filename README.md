@@ -8,5 +8,5 @@ rxs is a modified version of the popular miner [XMRig](https://github.com/xmrig/
 ## Donations
 * This modified version of xmrig does not mine donations at all. If you would like to donate to support xmrig, donate to the address here: [xmrig](https://github.com/xmrig/xmrig)
 
-* If you would like to support this project, you can donate to
+* If you would like to support this project instead, you can donate to
 `8BrtzsRcWMsTWhJKNnG1vHgRAHPE7gfrjbvtBQQfm1rmexsYQYBkByfjW3Ho8nZGBEf11B3L14wAWUv2Hgtpd2FABrTATAR`
