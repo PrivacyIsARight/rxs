@@ -45,11 +45,7 @@
 namespace rxs {
 
 
-#ifdef RXS_OS_WIN
-static constexpr const char *kHugepagesSupported = GREEN_BOLD("permission granted");
-#else
 static constexpr const char *kHugepagesSupported = GREEN_BOLD("supported");
-#endif
 
 
 #ifdef RXS_FEATURE_ASM
@@ -216,6 +212,3 @@ void rxs::Summary::print(Controller *controller)
 
     print_commands(config);
 }
-
-
-
