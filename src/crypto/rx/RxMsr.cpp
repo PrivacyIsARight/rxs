@@ -42,11 +42,7 @@ bool RxMsr::m_initialized   = false;
 static MsrItems items;
 
 
-#ifdef RXS_OS_WIN
-static constexpr inline int32_t get_cpu(int32_t)        { return -1; }
-#else
 static constexpr inline int32_t get_cpu(int32_t cpu)    { return cpu; }
-#endif
 
 
 static bool wrmsr(const MsrItems &preset, const std::vector<CpuThread> &threads, bool cache_qos, bool save)
