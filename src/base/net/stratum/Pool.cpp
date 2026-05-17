@@ -45,9 +45,6 @@
 #endif
 
 
-#ifdef _MSC_VER
-#   define strcasecmp  _stricmp
-#endif
 
 
 namespace rxs {
