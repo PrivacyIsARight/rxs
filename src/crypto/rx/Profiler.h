@@ -21,9 +21,7 @@
 
 
 #ifndef FORCE_INLINE
-#if defined(_MSC_VER)
-#define FORCE_INLINE __forceinline
-#elif defined(__GNUC__)
+#if defined(__GNUC__)
 #define FORCE_INLINE __attribute__((always_inline)) inline
 #elif defined(__clang__)
 #define FORCE_INLINE __inline__
@@ -40,20 +38,12 @@
 #include <cstddef>
 #include <type_traits>
 
-#if defined(_MSC_VER)
-#include <intrin.h>
-#endif
-
 
 static FORCE_INLINE uint64_t ReadTSC()
 {
-#ifdef _MSC_VER
-    return __rdtsc();
-#else
     uint32_t hi, lo;
     __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
     return (((uint64_t)hi) << 32) | lo;
-#endif
 }
 
 
