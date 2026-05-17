@@ -21,9 +21,6 @@
 #include <cstring>
 
 
-#ifdef _MSC_VER
-#   define strcasecmp  _stricmp
-#endif
 
 
 #include "crypto/common/Assembly.h"
