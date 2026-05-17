@@ -28,19 +28,7 @@
 #include <sys/mman.h>
 
 
-#ifdef RXS_OS_APPLE
-#   include <libkern/OSCacheControl.h>
-#   include <mach/vm_statistics.h>
-#   include <pthread.h>
-#   include <TargetConditionals.h>
-#   ifdef RXS_ARM
-#       define MEXTRA MAP_JIT
-#   else
-#       define MEXTRA 0
-#   endif
-#else
-#   define MEXTRA 0
-#endif
+#define MEXTRA 0
 
 
 #ifdef RXS_OS_LINUX
@@ -74,7 +62,7 @@
 #endif
 
 
-#if defined(RXS_OS_LINUX) || (!defined(RXS_OS_APPLE) && !defined(RXS_OS_FREEBSD))
+#if defined(RXS_OS_LINUX) || !defined(RXS_OS_FREEBSD)
 static inline int hugePagesFlag(size_t size)
 {
     return (static_cast<int>(log2(size)) & MAP_HUGE_MASK) << MAP_HUGE_SHIFT;
@@ -86,7 +74,7 @@ bool rxs::VirtualMemory::isHugepagesAvailable()
 {
 #   ifdef RXS_OS_LINUX
     return std::ifstream("/proc/sys/vm/nr_hugepages").good() || std::ifstream("/sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages").good();
-#   elif defined(RXS_OS_MACOS) && defined(RXS_ARM) || defined(RXS_OS_HAIKU)
+#   elif defined(RXS_OS_HAIKU)
     return false;
 #   else
     return true;
@@ -106,12 +94,7 @@ bool rxs::VirtualMemory::isOneGbPagesAvailable()
 
 bool rxs::VirtualMemory::protectRW(void *p, size_t size)
 {
-#   if defined(RXS_OS_APPLE) && defined(RXS_ARM)
-    pthread_jit_write_protect_np(false);
-    return true;
-#   else
     return mprotect(p, size, PROT_READ | PROT_WRITE) == 0;
-#   endif
 }
 
 
@@ -125,11 +108,7 @@ bool rxs::VirtualMemory::protectRX(void *p, size_t size)
 {
     bool result = true;
 
-#   if defined(RXS_OS_APPLE) && defined(RXS_ARM)
-    pthread_jit_write_protect_np(true);
-#   else
     result = (mprotect(p, size, PROT_READ | PROT_EXEC) == 0);
-#   endif
 
 #   if defined(RXS_ARM)
     flushInstructionCache(p, size);
@@ -141,12 +120,7 @@ bool rxs::VirtualMemory::protectRX(void *p, size_t size)
 
 void *rxs::VirtualMemory::allocateExecutableMemory(size_t size, bool hugePages)
 {
-#   if defined(RXS_OS_APPLE)
-    void *mem = mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON | MEXTRA, -1, 0);
-#   ifdef RXS_ARM
-    pthread_jit_write_protect_np(false);
-#   endif
-#   elif defined(RXS_OS_FREEBSD)
+#   if defined(RXS_OS_FREEBSD)
     void *mem = nullptr;
 
     if (hugePages) {
@@ -159,7 +133,6 @@ void *rxs::VirtualMemory::allocateExecutableMemory(size_t size, bool hugePages)
 #   elif defined(RXS_OS_HAIKU)
     void *mem = mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 #   else
-
     void *mem = nullptr;
 
     if (hugePages) {
@@ -169,7 +142,6 @@ void *rxs::VirtualMemory::allocateExecutableMemory(size_t size, bool hugePages)
     if (!mem) {
         mem = mmap(0, size, PROT_READ | PROT_WRITE | SECURE_PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     }
-
 #   endif
 
     return mem == MAP_FAILED ? nullptr : mem;
@@ -178,9 +150,7 @@ void *rxs::VirtualMemory::allocateExecutableMemory(size_t size, bool hugePages)
 
 void *rxs::VirtualMemory::allocateLargePagesMemory(size_t size)
 {
-#   if defined(RXS_OS_APPLE)
-    void *mem = mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, VM_FLAGS_SUPERPAGE_SIZE_2MB, 0);
-#   elif defined(RXS_OS_FREEBSD)
+#   if defined(RXS_OS_FREEBSD)
     void *mem = mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_ALIGNED_SUPER | MAP_PREFAULT_READ, -1, 0);
 #   elif defined(RXS_OS_HAIKU)
     void *mem = nullptr;
@@ -188,7 +158,7 @@ void *rxs::VirtualMemory::allocateLargePagesMemory(size_t size)
     void *mem = mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB | MAP_POPULATE | hugePagesFlag(hugePageSize()), 0, 0);
 #   endif
 
-    return mem == MAP_FAILED ? nullptr : mem;
+    return (mem == nullptr || mem == MAP_FAILED) ? nullptr : mem;
 }
 
 
@@ -208,9 +178,7 @@ void *rxs::VirtualMemory::allocateOneGbPagesMemory(size_t size)
 
 void rxs::VirtualMemory::flushInstructionCache(void *p, size_t size)
 {
-#   if defined(RXS_OS_APPLE)
-    sys_icache_invalidate(p, size);
-#   elif defined (HAVE_BUILTIN_CLEAR_CACHE) || defined (__GNUC__)
+#   if defined (HAVE_BUILTIN_CLEAR_CACHE) || defined (__GNUC__)
     __builtin___clear_cache(reinterpret_cast<char*>(p), reinterpret_cast<char*>(p) + size);
 #   endif
 }
