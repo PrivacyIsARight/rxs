@@ -25,9 +25,6 @@
 #include <cstdio>
 
 
-#ifdef _MSC_VER
-#   define strncasecmp _strnicmp
-#endif
 
 
 namespace rxs {
