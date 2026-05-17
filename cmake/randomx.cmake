@@ -1,16 +1,9 @@
 if (WITH_RANDOMX)
     include(CheckSymbolExists)
 
-    if (WIN32)
-        check_symbol_exists(_aligned_malloc "stdlib.h" HAVE_ALIGNED_MALLOC)
-        if (HAVE_ALIGNED_MALLOC)
-            add_compile_definitions(HAVE_ALIGNED_MALLOC)
-        endif()
-    else()
-        check_symbol_exists(posix_memalign "stdlib.h" HAVE_POSIX_MEMALIGN)
-        if (HAVE_POSIX_MEMALIGN)
-            add_compile_definitions(HAVE_POSIX_MEMALIGN)
-        endif()
+    check_symbol_exists(posix_memalign "stdlib.h" HAVE_POSIX_MEMALIGN)
+    if (HAVE_POSIX_MEMALIGN)
+        add_compile_definitions(HAVE_POSIX_MEMALIGN)
     endif()
 
     add_definitions(/DRXS_ALGO_RANDOMX)
@@ -56,13 +49,7 @@ if (WITH_RANDOMX)
         src/crypto/rx/RxVm.cpp
     )
 
-    if (WITH_ASM AND CMAKE_C_COMPILER_ID MATCHES MSVC)
-        enable_language(ASM_MASM)
-        list(APPEND SOURCES_CRYPTO
-             src/crypto/randomx/jit_compiler_x86_static.asm
-             src/crypto/randomx/jit_compiler_x86.cpp
-            )
-    elseif (WITH_ASM AND NOT RXS_ARM AND NOT RXS_RISCV AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+    if (WITH_ASM AND NOT RXS_ARM AND NOT RXS_RISCV AND CMAKE_SIZEOF_VOID_P EQUAL 8)
         list(APPEND SOURCES_CRYPTO
              src/crypto/randomx/jit_compiler_x86_static.S
              src/crypto/randomx/jit_compiler_x86.cpp
@@ -75,11 +62,7 @@ if (WITH_RANDOMX)
              src/crypto/randomx/jit_compiler_a64.cpp
             )
         # cheat because cmake and ccache hate each other
-        if (CMAKE_GENERATOR STREQUAL Xcode)
-            set_property(SOURCE src/crypto/randomx/jit_compiler_a64_static.S PROPERTY LANGUAGE ASM)
-        else()
-            set_property(SOURCE src/crypto/randomx/jit_compiler_a64_static.S PROPERTY LANGUAGE C)
-        endif()
+        set_property(SOURCE src/crypto/randomx/jit_compiler_a64_static.S PROPERTY LANGUAGE C)
     elseif (RXS_RISCV AND CMAKE_SIZEOF_VOID_P EQUAL 8)
         list(APPEND SOURCES_CRYPTO
              src/crypto/randomx/jit_compiler_rv64_static.S
@@ -149,22 +132,15 @@ if (WITH_RANDOMX)
             )
     endif()
 
-    if (WITH_MSR AND NOT RXS_ARM AND NOT RXS_RISCV AND CMAKE_SIZEOF_VOID_P EQUAL 8 AND (RXS_OS_WIN OR RXS_OS_LINUX))
+    if (WITH_MSR AND NOT RXS_ARM AND NOT RXS_RISCV AND CMAKE_SIZEOF_VOID_P EQUAL 8 AND RXS_OS_LINUX)
         add_definitions(/DRXS_FEATURE_MSR)
         add_definitions(/DRXS_FIX_RYZEN)
         message("-- WITH_MSR=ON")
 
-        if (RXS_OS_WIN)
-            list(APPEND SOURCES_CRYPTO
-                src/crypto/rx/RxFix_win.cpp
-                src/hw/msr/Msr_win.cpp
-                )
-        elseif (RXS_OS_LINUX)
-            list(APPEND SOURCES_CRYPTO
-                src/crypto/rx/RxFix_linux.cpp
-                src/hw/msr/Msr_linux.cpp
-                )
-        endif()
+        list(APPEND SOURCES_CRYPTO
+            src/crypto/rx/RxFix_linux.cpp
+            src/hw/msr/Msr_linux.cpp
+            )
 
         list(APPEND HEADERS_CRYPTO
             src/crypto/rx/RxFix.h
@@ -193,9 +169,7 @@ if (WITH_RANDOMX)
 
     if (WITH_VAES)
         set(SOURCES_CRYPTO "${SOURCES_CRYPTO}" src/crypto/randomx/aes_hash_vaes512.cpp)
-        if (CMAKE_C_COMPILER_ID MATCHES MSVC)
-            set_source_files_properties(src/crypto/randomx/aes_hash_vaes512.cpp PROPERTIES COMPILE_FLAGS "/arch:AVX512")
-        elseif (CMAKE_C_COMPILER_ID MATCHES GNU OR CMAKE_C_COMPILER_ID MATCHES Clang)
+        if (CMAKE_C_COMPILER_ID MATCHES GNU OR CMAKE_C_COMPILER_ID MATCHES Clang)
             set_source_files_properties(src/crypto/randomx/aes_hash_vaes512.cpp PROPERTIES COMPILE_FLAGS "-mavx512f -mvaes")
         endif()
     endif()
