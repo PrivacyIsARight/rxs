@@ -85,11 +85,7 @@ DECL(randomx_prefetch_scratchpad_end):
 
 .balign 64
 DECL(randomx_program_prologue):
-#if defined(WINABI)
-	#include "asm/program_prologue_win64.inc"
-#else
 	#include "asm/program_prologue_linux.inc"
-#endif
 	movapd xmm13, xmmword ptr [mantissaMask+rip]
 	movapd xmm14, xmmword ptr [exp240+rip]
 	movapd xmm15, xmmword ptr [scaleMask+rip]
@@ -166,19 +162,10 @@ DECL(randomx_dataset_init):
 	push r13
 	push r14
 	push r15
-#if defined(WINABI)
-	push rdi
-	push rsi
-	mov rdi, qword ptr [rcx] ;# cache->memory
-	mov rsi, rdx ;# dataset
-	mov rbp, r8  ;# block index
-	push r9      ;# max. block index
-#else
 	mov rdi, qword ptr [rdi] ;# cache->memory
 	;# dataset in rsi
 	mov rbp, rdx  ;# block index
 	push rcx      ;# max. block index
-#endif
 init_block_loop:
 	prefetchw byte ptr [rsi]
 	mov rbx, rbp
@@ -199,10 +186,6 @@ call_offset:
 	cmp rbp, qword ptr [rsp]
 	jb init_block_loop
 	pop rax
-#if defined(WINABI)
-	pop rsi
-	pop rdi
-#endif
 	pop r15
 	pop r14
 	pop r13
@@ -215,17 +198,10 @@ call_offset:
 DECL(randomx_dataset_init_avx2_prologue):
 	#include "asm/program_sshash_avx2_save_registers.inc"
 
-#if defined(WINABI)
-	mov rdi, qword ptr [rcx] ;# cache->memory
-	mov rsi, rdx ;# dataset
-	mov rbp, r8  ;# block index
-	push r9      ;# max. block index
-#else
 	mov rdi, qword ptr [rdi] ;# cache->memory
 	;# dataset in rsi
 	mov rbp, rdx  ;# block index
 	push rcx      ;# max. block index
-#endif
 	sub rsp, 40
 
 	jmp randomx_dataset_init_avx2_prologue_loop_begin
@@ -305,11 +281,7 @@ DECL(randomx_dataset_init_avx2_ssh_prefetch):
 .balign 64
 DECL(randomx_program_epilogue):
 	#include "asm/program_epilogue_store.inc"
-#if defined(WINABI)
-	#include "asm/program_epilogue_win64.inc"
-#else
 	#include "asm/program_epilogue_linux.inc"
-#endif
 
 .balign 64
 DECL(randomx_sshash_load):
@@ -350,9 +322,7 @@ DECL(randomx_program_end):
 	nop
 
 DECL(randomx_reciprocal_fast):
-#if !defined(WINABI)
 	mov rcx, rdi
-#endif
 	#include "asm/randomx_reciprocal.inc"
 
 #if defined(__linux__) && defined(__ELF__)
