@@ -13,9 +13,6 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL FreeBSD OR CMAKE_SYSTEM_NAME STREQUAL DragonF
 elseif (CMAKE_SYSTEM_NAME STREQUAL OpenBSD)
     set(RXS_OS_OPENBSD ON)
     add_definitions(-DRXS_OS_OPENBSD)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Haiku")
-    set(RXS_OS_HAIKU ON)
-    add_definitions(-DRXS_OS_HAIKU)
 endif()
 
 if (WITH_SECURE_JIT)
