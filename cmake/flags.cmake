@@ -1,6 +1,6 @@
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -31,7 +31,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
     elseif (RXS_RISCV)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=${RVARCH}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=${RVARCH}")
-        
+
         add_definitions(-DHAVE_ROTR)
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -maes")
@@ -51,10 +51,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -funroll-loops -fmerge-all-constants")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Ofast -funroll-loops -fmerge-all-constants")
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fexceptions -fno-rtti")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -funroll-loops -fmerge-all-constants")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -funroll-loops -fmerge-all-constants")
 
     if (ARM_TARGET EQUAL 8)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARM8_CXX_FLAGS}")
@@ -65,7 +65,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
     elseif (RXS_RISCV)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=${RVARCH}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=${RVARCH}")
-        
+
         add_definitions(-DHAVE_ROTR)
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -maes")
