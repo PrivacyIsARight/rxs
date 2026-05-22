@@ -31,7 +31,7 @@ class Client::Socks5
 public:
     Socks5(Client *client);
 
-    inline bool isReady() const     { return m_state == Ready; }
+    [[nodiscard]] inline bool isReady() const     { return m_state == Ready; }
 
     bool read(const char *data, size_t size);
     void handshake();
@@ -49,7 +49,7 @@ private:
 
     void connect();
 
-    Client *m_client;
+    Client * const m_client;
     size_t m_nextSize   = 0;
     State m_state       = Created;
 };
