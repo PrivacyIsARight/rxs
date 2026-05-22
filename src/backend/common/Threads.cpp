@@ -34,11 +34,12 @@ template <class T>
 const T &rxs::Threads<T>::get(const String &profileName) const
 {
     static T empty;
-    if (profileName.isNull() || !has(profileName)) {
+    if (profileName.isNull()) {
         return empty;
     }
 
-    return m_profiles.at(profileName);
+    const auto it = m_profiles.find(profileName);
+    return it != m_profiles.end() ? it->second : empty;
 }
 
 
@@ -98,8 +99,9 @@ rxs::String rxs::Threads<T>::profileName(const Algorithm &algorithm, bool strict
         return name;
     }
 
-    if (m_aliases.count(algorithm) > 0) {
-        return m_aliases.at(algorithm);
+    const auto alias_it = m_aliases.find(algorithm);
+    if (alias_it != m_aliases.end()) {
+        return alias_it->second;
     }
 
     if (strict) {
