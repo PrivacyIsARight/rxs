@@ -43,7 +43,7 @@ class JobResults
 {
 public:
     static void done(const Job &job);
-    static void setListener(IJobResultListener *listener, bool hwAES);
+    static void setListener(IJobResultListener *listener);
     static void stop();
     static void submit(const Job &job, uint32_t nonce, const uint8_t *result);
     static void submit(const Job& job, uint32_t nonce, const uint8_t* result, const uint8_t* extra_data);
