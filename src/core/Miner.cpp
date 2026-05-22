@@ -272,8 +272,6 @@ public:
         std::pair<bool, double> speed[3] = { { true, 0.0 }, { true, 0.0 }, { true, 0.0 } };
         uint32_t count   = 0;
 
-        double avg_hashrate = 0.0;
-
         for (auto backend : backends) {
             const auto hashrate = backend->hashrate();
             if (hashrate) {
@@ -286,8 +284,6 @@ public:
                 if (h0.first) { speed[0].second += h0.second; } else { speed[0].first = false; }
                 if (h1.first) { speed[1].second += h1.second; } else { speed[1].first = false; }
                 if (h2.first) { speed[2].second += h2.second; } else { speed[2].first = false; }
-
-                avg_hashrate += hashrate->average();
             }
 
             backend->printHashrate(details);
@@ -312,17 +308,12 @@ public:
             h = "MH/s";
         }
 
-        char avg_hashrate_buf[64];
-        avg_hashrate_buf[0] = '\0';
-
-
-        LOG_INFO("%s " WHITE_BOLD("speed") " 10s/60s/15m " CYAN_BOLD("%s") CYAN(" %s %s ") CYAN_BOLD("%s") " max " CYAN_BOLD("%s %s") "%s",
+        LOG_INFO("%s " WHITE_BOLD("speed") " 10s/60s/15m " CYAN_BOLD("%s") CYAN(" %s %s ") CYAN_BOLD("%s") " max " CYAN_BOLD("%s %s"),
                  Tags::miner(),
                  Hashrate::format(speed[0],                 num,          16),
                  Hashrate::format(speed[1],                 num + 16,     16),
                  Hashrate::format(speed[2],                 num + 16 * 2, 16), h,
-                 Hashrate::format({ maxHashrate[algorithm] > 0.0, maxHashrate[algorithm] * scale },   num + 16 * 3, 16), h,
-                 avg_hashrate_buf
+                 Hashrate::format({ maxHashrate[algorithm] > 0.0, maxHashrate[algorithm] * scale },   num + 16 * 3, 16), h
                  );
 
 #       ifdef RXS_FEATURE_BENCHMARK
