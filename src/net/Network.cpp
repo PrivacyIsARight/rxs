@@ -57,7 +57,7 @@
 rxs::Network::Network(Controller *controller) :
     m_controller(controller)
 {
-    JobResults::setListener(this, controller->config()->cpu().isHwAES());
+    JobResults::setListener(this);
     controller->addListener(this);
 
 #   ifdef RXS_FEATURE_API
