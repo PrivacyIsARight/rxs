@@ -1,6 +1,6 @@
 # rxs
 
-A high-performance, lightweight [XMRig](https://github.com/xmrig/xmrig) fork focused exclusively on RandomX. By dropping support for other algorithms, rxs achieves better performance and a smaller binary than XMRig.
+A high-performance, lightweight [XMRig](https://github.com/xmrig/xmrig) fork focused exclusively on RandomX. By dropping support for other algorithms, rxs is able to achieve better performance and a smaller binary than XMRig. For the most part, rxs should be a drop in replacement for XMRig.
 
 For KawPow, CryptoNight, GhostRider, Windows, or macOS support, use XMRig instead.
 
@@ -11,7 +11,5 @@ For KawPow, CryptoNight, GhostRider, Windows, or macOS support, use XMRig instea
 
 ## Donations
 
-rxs does not mine donations. To support XMRig, donate via their [repository](https://github.com/xmrig/xmrig).
-
-To support rxs:
-`83B6mR22EkZRPdauz6gPzJBXxQa7ksjs2AyhsAeuKGYKXz3euapMU7Bgp47ufNZeArhnAUP2tkqKu42bCumdorPRTswZcTb`
+rxs does not mine donations and never will. All of your processing power goes toward mining for yourself.
+If you would like to support rxs, donate monero to: `83B6mR22EkZRPdauz6gPzJBXxQa7ksjs2AyhsAeuKGYKXz3euapMU7Bgp47ufNZeArhnAUP2tkqKu42bCumdorPRTswZcTb`
