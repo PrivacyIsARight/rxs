@@ -103,7 +103,7 @@ void rxs::RxQueue::enqueue(const RxSeed &seed, const std::vector<uint32_t> &node
         return;
     }
 
-    m_queue.emplace_back(seed, nodeset, threads, hugePages, oneGbPages, mode, priority);
+    m_pending.emplace(seed, nodeset, threads, hugePages, oneGbPages, mode, priority);
     m_seed  = seed;
     m_state = STATE_PENDING;
 
@@ -133,8 +133,8 @@ void rxs::RxQueue::backgroundInit()
             continue;
         }
 
-        const auto item = m_queue.back();
-        m_queue.clear();
+        const auto item = *m_pending;
+        m_pending.reset();
 
         lock.unlock();
 
@@ -150,11 +150,10 @@ void rxs::RxQueue::backgroundInit()
 
         lock.lock();
 
-        if (m_state == STATE_SHUTDOWN || !m_queue.empty()) {
+        if (m_state == STATE_SHUTDOWN || m_pending.has_value()) {
             continue;
         }
 
-        // Update seed here again in case there was more than one item in the queue
         m_seed = item.seed;
         m_state = STATE_IDLE;
         m_async->send();
