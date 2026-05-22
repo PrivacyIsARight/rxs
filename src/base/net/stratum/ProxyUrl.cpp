@@ -21,13 +21,6 @@
 #include "3rdparty/rapidjson/document.h"
 
 
-namespace rxs {
-
-static const String kLocalhost = "127.0.0.1";
-
-} // namespace rxs
-
-
 rxs::ProxyUrl::ProxyUrl(const rapidjson::Value &value)
 {
     m_port = 0;
@@ -43,7 +36,12 @@ rxs::ProxyUrl::ProxyUrl(const rapidjson::Value &value)
 
 const rxs::String &rxs::ProxyUrl::host() const
 {
-    return m_host.isNull() && isValid() ? kLocalhost : m_host;
+    if (m_host.isNull() && isValid()) {
+        static const String kLocalhost = "127.0.0.1";
+        return kLocalhost;
+    }
+
+    return m_host;
 }
 
 
