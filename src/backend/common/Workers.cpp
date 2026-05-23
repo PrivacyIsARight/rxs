@@ -143,10 +143,10 @@ template<class T>
 void rxs::Workers<T>::start(const std::vector<T> &data, const std::shared_ptr<Benchmark> &benchmark)
 {
     if (!benchmark) {
-        return start(data, true);
+        return start(data);
     }
 
-    start(data, false);
+    start(data);
 
     d_ptr->benchmark = benchmark;
     d_ptr->benchmark->start();
@@ -188,7 +188,7 @@ void *rxs::Workers<T>::onReady(void *arg)
 
 
 template<class T>
-void rxs::Workers<T>::start(const std::vector<T> &data, bool /*sleep*/)
+void rxs::Workers<T>::start(const std::vector<T> &data)
 {
     for (const auto &item : data) {
         m_workers.push_back(new Thread<T>(d_ptr->backend, m_workers.size(), item));
