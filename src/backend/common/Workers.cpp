@@ -21,10 +21,7 @@
 #include "backend/common/interfaces/IBackend.h"
 #include "backend/cpu/CpuWorker.h"
 #include "base/io/log/Log.h"
-#include "base/io/log/Tags.h"
 #include "base/tools/Chrono.h"
-
-
 
 
 #ifdef RXS_FEATURE_BENCHMARK
