@@ -80,19 +80,21 @@ protected:
 private:
     inline void submit()
     {
-        std::vector<JobResult> results;
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_processingResults.swap(m_results);
+        }
 
-        m_mutex.lock();
-        m_results.swap(results);
-        m_mutex.unlock();
-
-        for (const auto &result : results) {
+        for (const auto &result : m_processingResults) {
             m_listener->onJobResult(result);
         }
+
+        m_processingResults.clear();
     }
 
     IJobResultListener *m_listener;
     std::vector<JobResult> m_results;
+    std::vector<JobResult> m_processingResults;
     std::mutex m_mutex;
     std::shared_ptr<Async> m_async;
 };
