@@ -86,8 +86,11 @@ int rxs::App::exec()
 
     m_controller->start();
 
-    rc = uv_run(uv_default_loop(), UV_RUN_DEFAULT);
-    uv_loop_close(uv_default_loop());
+    uv_loop_t* const loop = uv_default_loop();
+    if (loop != nullptr) {
+        rc = uv_run(loop, UV_RUN_DEFAULT);
+        uv_loop_close(loop);
+    }
 
     return rc;
 }
@@ -112,7 +115,8 @@ void rxs::App::onSignal(int signum)
     case SIGHUP:
     case SIGTERM:
     case SIGINT:
-        return close();
+        close();
+        return;
 
     default:
         break;
