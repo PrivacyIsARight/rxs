@@ -172,13 +172,14 @@ void rxs::Network::onLogin(IStrategy *, IClient *client, rapidjson::Document &do
     Algorithms algorithms     = m_controller->miner()->algorithms();
     const Algorithm algorithm = client->pool().algorithm();
     if (algorithm.isValid()) {
-        const size_t index = static_cast<size_t>(std::distance(algorithms.begin(), std::find(algorithms.begin(), algorithms.end(), algorithm)));
-        if (index > 0 && index < algorithms.size()) {
-            std::swap(algorithms[0], algorithms[index]);
+        auto it = std::find(algorithms.begin(), algorithms.end(), algorithm);
+        if (it != algorithms.end() && it != algorithms.begin()) {
+            std::iter_swap(algorithms.begin(), it);
         }
     }
 
     Value algo(kArrayType);
+    algo.Reserve(static_cast<SizeType>(algorithms.size()), allocator);
 
     for (const auto &a : algorithms) {
         algo.PushBack(StringRef(a.name()), allocator);
@@ -193,7 +194,8 @@ void rxs::Network::onPause(IStrategy *strategy)
     if (!m_strategy->isActive()) {
         LOG_ERR("%s " RED("no active pools, stop mining"), Tags::network());
 
-        return m_controller->miner()->pause();
+        m_controller->miner()->pause();
+        return;
     }
 }
 
