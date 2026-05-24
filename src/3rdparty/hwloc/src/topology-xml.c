@@ -2287,7 +2287,7 @@ done:
       if (nbobjs == data->nbnumanodes
           && !(topology->flags & HWLOC_TOPOLOGY_FLAG_NO_DISTANCES)) {
 	hwloc_obj_t *objs = malloc(nbobjs*sizeof(hwloc_obj_t));
-	uint64_t *values = malloc(nbobjs*nbobjs*sizeof(*values));
+	uint64_t *values = malloc((size_t) nbobjs * nbobjs * sizeof(*values));
         assert(data->nbnumanodes > 0); /* v1dist->nbobjs is >0 after import */
         assert(data->first_numanode);
 	if (objs && values) {
