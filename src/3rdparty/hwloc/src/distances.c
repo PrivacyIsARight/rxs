@@ -1234,7 +1234,7 @@ hwloc__groups_by_distances(struct hwloc_topology *topology,
 
   groupobjs = malloc(nbgroups * sizeof(*groupobjs));
   groupsizes = malloc(nbgroups * sizeof(*groupsizes));
-  groupvalues = malloc(nbgroups * nbgroups * sizeof(*groupvalues));
+  groupvalues = malloc((size_t) nbgroups * nbgroups * sizeof(*groupvalues));
   if (!groupobjs || !groupsizes || !groupvalues)
     goto out_with_groups;
 
