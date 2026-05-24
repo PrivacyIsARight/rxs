@@ -350,7 +350,7 @@ int hwloc_topology_diff_build(hwloc_topology_t topo1,
 			    || dist1->different_types || dist2->different_types /* too lazy to support this case */
 			    || dist1->nbobjs != dist2->nbobjs
 			    || dist1->kind != dist2->kind
-			    || memcmp(dist1->values, dist2->values, dist1->nbobjs * dist1->nbobjs * sizeof(*dist1->values)))
+			    || memcmp(dist1->values, dist2->values, (size_t) dist1->nbobjs * dist1->nbobjs * sizeof(*dist1->values)))
                           goto roottoocomplex;
 			for(i=0; i<dist1->nbobjs; i++)
 				/* gp_index isn't enforced above. so compare logical_index instead, which is enforced. requires distances refresh() above */
