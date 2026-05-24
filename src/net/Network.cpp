@@ -108,7 +108,7 @@ void rxs::Network::execCommand(char command)
 }
 
 
-void rxs::Network::onActive(IStrategy *strategy, IClient *client)
+void rxs::Network::onActive(IStrategy * /*strategy*/, IClient *client)
 {
 
     const auto &pool = client->pool();
@@ -188,7 +188,7 @@ void rxs::Network::onLogin(IStrategy *, IClient *client, rapidjson::Document &do
 }
 
 
-void rxs::Network::onPause(IStrategy *strategy)
+void rxs::Network::onPause(IStrategy * /*strategy*/)
 {
     if (!m_strategy->isActive()) {
         LOG_ERR("%s " RED("no active pools, stop mining"), Tags::network());
