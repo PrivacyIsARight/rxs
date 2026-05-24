@@ -169,7 +169,7 @@ static int hwloc_internal_distances_dup_one(struct hwloc_topology *new, struct h
   }
 
   memcpy(newdist->indexes, olddist->indexes, nbobjs * sizeof(*newdist->indexes));
-  memcpy(newdist->values, olddist->values, nbobjs*nbobjs * sizeof(*newdist->values));
+  memcpy(newdist->values, olddist->values, (size_t) nbobjs * nbobjs * sizeof(*newdist->values));
 
   newdist->next = NULL;
   newdist->prev = new->last_dist;
