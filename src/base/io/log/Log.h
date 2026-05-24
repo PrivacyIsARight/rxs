@@ -137,8 +137,8 @@ private:
 #define LOG_WARN(x, ...)    rxs::Log::print(rxs::Log::WARNING, x, ##__VA_ARGS__)
 #define LOG_NOTICE(x, ...)  rxs::Log::print(rxs::Log::NOTICE,  x, ##__VA_ARGS__)
 #define LOG_INFO(x, ...)    rxs::Log::print(rxs::Log::INFO,    x, ##__VA_ARGS__)
-#define LOG_VERBOSE(x, ...) if (rxs::Log::verbose() > 0) { rxs::Log::print(rxs::Log::INFO, x, ##__VA_ARGS__); }
 #define LOG_V1(x, ...)      if (rxs::Log::verbose() > 0) { rxs::Log::print(rxs::Log::INFO, x, ##__VA_ARGS__); }
+#define LOG_VERBOSE         LOG_V1
 #define LOG_V2(x, ...)      if (rxs::Log::verbose() > 1) { rxs::Log::print(rxs::Log::INFO, x, ##__VA_ARGS__); }
 #define LOG_V3(x, ...)      if (rxs::Log::verbose() > 2) { rxs::Log::print(rxs::Log::INFO, x, ##__VA_ARGS__); }
 #define LOG_V4(x, ...)      if (rxs::Log::verbose() > 3) { rxs::Log::print(rxs::Log::INFO, x, ##__VA_ARGS__); }
