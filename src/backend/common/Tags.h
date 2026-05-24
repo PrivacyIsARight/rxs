@@ -33,7 +33,7 @@
 namespace rxs {
 
 
-const char *backend_tag(uint32_t backend);
+const char *backend_tag(uint32_t);
 const char *cpu_tag();
 
 
