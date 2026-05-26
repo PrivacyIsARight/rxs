@@ -23,6 +23,7 @@
 
 
 #include "backend/common/Hashrate.h"
+#include "base/tools/Format.h"
 #include "3rdparty/rapidjson/document.h"
 #include "base/io/json/Json.h"
 #include "base/tools/Chrono.h"
@@ -31,12 +32,13 @@
 
 inline static const char *format(std::pair<bool, double> h, char *buf, size_t size)
 {
-    if (h.first) {
-        snprintf(buf, size, (h.second < 100.0) ? "%04.2f" : "%03.1f", h.second);
-        return buf;
+    if (!h.first) {
+        return "n/a";
     }
 
-    return "n/a";
+    snprintf(buf, size, (h.second < 100.0) ? "%04.2f" : "%03.1f", h.second);
+    rxs::Format::withCommas(buf, size);
+    return buf;
 }
 
 

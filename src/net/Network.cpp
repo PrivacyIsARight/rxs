@@ -27,6 +27,7 @@
 #include "base/net/stratum/NetworkState.h"
 #include "base/net/stratum/SubmitResult.h"
 #include "base/tools/Chrono.h"
+#include "base/tools/Format.h"
 #include "base/tools/Timer.h"
 #include "core/config/Config.h"
 #include "core/Controller.h"
@@ -260,12 +261,7 @@ void rxs::Network::setJob(IClient *client, const Job &job)
 
         char height_buf[64] = {};
         if (job.height() > 0) {
-            uint64_t h = job.height();
-            std::string h_str = std::to_string(h);
-            for (int i = static_cast<int>(h_str.size()) - 3; i > 0; i -= 3) {
-                h_str.insert(static_cast<size_t>(i), ",");
-            }
-            snprintf(height_buf, sizeof(height_buf), " height " SAGE_BOLD_S "%s" CLEAR, h_str.c_str());
+            snprintf(height_buf, sizeof(height_buf), " height " SAGE_BOLD_S "%s" CLEAR, Format::withCommas(job.height()).c_str());
         }
 
         LOG_INFO("%s " SLATE_BOLD("new job") " from " WHITE_BOLD("%s:%d%s") " diff " SAGE_BOLD("%s") " algo " WHITE_BOLD("%s") "%s%s",
