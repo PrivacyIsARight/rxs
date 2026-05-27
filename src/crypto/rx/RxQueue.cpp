@@ -42,9 +42,10 @@ rxs::RxQueue::RxQueue(IRxListener *listener) :
 
 rxs::RxQueue::~RxQueue()
 {
-    std::unique_lock<std::mutex> lock(m_mutex);
-    m_state = STATE_SHUTDOWN;
-    lock.unlock();
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_state = STATE_SHUTDOWN;
+    }
 
     m_cv.notify_one();
 
@@ -85,9 +86,10 @@ bool rxs::RxQueue::isReady(const T &seed)
 
 void rxs::RxQueue::enqueue(const RxSeed &seed, const std::vector<uint32_t> &nodeset, uint32_t threads, bool hugePages, bool oneGbPages, RxConfig::Mode mode, int priority)
 {
-    std::unique_lock<std::mutex> lock(m_mutex);
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
 
-    if (!m_storage) {
+        if (!m_storage) {
 #       ifdef RXS_FEATURE_HWLOC
         if (!nodeset.empty()) {
             m_storage = new RxNUMAStorage(nodeset);
@@ -97,17 +99,16 @@ void rxs::RxQueue::enqueue(const RxSeed &seed, const std::vector<uint32_t> &node
         {
             m_storage = new RxBasicStorage();
         }
+        }
+
+        if (m_state == STATE_PENDING && m_seed == seed) {
+            return;
+        }
+
+        m_pending.emplace(seed, nodeset, threads, hugePages, oneGbPages, mode, priority);
+        m_seed  = seed;
+        m_state = STATE_PENDING;
     }
-
-    if (m_state == STATE_PENDING && m_seed == seed) {
-        return;
-    }
-
-    m_pending.emplace(seed, nodeset, threads, hugePages, oneGbPages, mode, priority);
-    m_seed  = seed;
-    m_state = STATE_PENDING;
-
-    lock.unlock();
 
     m_cv.notify_one();
 }
@@ -122,11 +123,13 @@ bool rxs::RxQueue::isReadyUnsafe(const T &seed) const
 
 void rxs::RxQueue::backgroundInit()
 {
-    while (m_state != STATE_SHUTDOWN) {
+    while (true) {
         std::unique_lock<std::mutex> lock(m_mutex);
 
-        if (m_state == STATE_IDLE) {
-            m_cv.wait(lock, [this]{ return m_state != STATE_IDLE; });
+        m_cv.wait(lock, [this]{ return m_state != STATE_IDLE; });
+
+        if (m_state == STATE_SHUTDOWN) {
+            break;
         }
 
         if (m_state != STATE_PENDING) {
@@ -163,9 +166,11 @@ void rxs::RxQueue::backgroundInit()
 
 void rxs::RxQueue::onReady()
 {
-    std::unique_lock<std::mutex> lock(m_mutex);
-    const bool ready = m_listener && m_state == STATE_IDLE;
-    lock.unlock();
+    bool ready = false;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        ready = m_listener && m_state == STATE_IDLE;
+    }
 
     if (ready) {
         m_listener->onDatasetReady();

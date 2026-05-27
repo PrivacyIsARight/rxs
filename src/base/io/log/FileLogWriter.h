@@ -22,6 +22,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <mutex>
 #include <vector>
 #include <uv.h>
 
@@ -50,7 +51,7 @@ private:
     int m_file      = -1;
     int64_t m_pos   = 0;
 
-    uv_mutex_t m_buffersLock;
+    std::mutex m_buffersLock;
     std::vector<uv_buf_t> m_buffers;
 
     uv_async_t m_flushAsync;
