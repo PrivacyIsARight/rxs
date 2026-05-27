@@ -43,7 +43,8 @@ public:
 
     inline bool isReady(const Job &job) const   { return m_ready && m_seed == job; }
     inline RxDataset *dataset() const           { return m_dataset; }
-    inline void deleteDataset()                 { delete m_dataset; m_dataset = nullptr; }
+    inline void deleteDataset()                 { delete m_dataset; m_dataset = nullptr; m_isAllocated = false; }
+    inline bool isAllocated() const             { return m_isAllocated; }
 
 
     inline void setSeed(const RxSeed &seed)
@@ -73,6 +74,7 @@ public:
 
         printAllocStatus(ts);
 
+        m_isAllocated = true;
         return true;
     }
 
@@ -115,6 +117,7 @@ private:
 
 
     bool m_ready         = false;
+    bool m_isAllocated   = false;
     RxDataset *m_dataset = nullptr;
     RxSeed m_seed;
 };
@@ -137,7 +140,7 @@ rxs::RxBasicStorage::~RxBasicStorage()
 
 bool rxs::RxBasicStorage::isAllocated() const
 {
-    return d_ptr->dataset() && d_ptr->dataset()->cache() && d_ptr->dataset()->cache()->get();
+    return d_ptr->isAllocated();
 }
 
 
