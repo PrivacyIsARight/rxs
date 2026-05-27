@@ -53,14 +53,10 @@ rxs::FileLogWriter::FileLogWriter(const char* fileName)
 rxs::FileLogWriter::~FileLogWriter()
 {
     uv_close(reinterpret_cast<uv_handle_t*>(&m_flushAsync), nullptr);
-
-    uv_mutex_destroy(&m_buffersLock);
 }
 
 void rxs::FileLogWriter::init()
 {
-    uv_mutex_init(&m_buffersLock);
-
     uv_async_init(uv_default_loop(), &m_flushAsync, on_flush);
     m_flushAsync.data = this;
 }
@@ -102,12 +98,11 @@ bool rxs::FileLogWriter::write(const char *data, size_t size)
     uv_buf_t buf = uv_buf_init(new char[size], size);
     memcpy(buf.base, data, size);
 
-    uv_mutex_lock(&m_buffersLock);
-
-    m_buffers.emplace_back(buf);
-    uv_async_send(&m_flushAsync);
-
-    uv_mutex_unlock(&m_buffersLock);
+    {
+        std::lock_guard<std::mutex> lock(m_buffersLock);
+        m_buffers.emplace_back(buf);
+        uv_async_send(&m_flushAsync);
+    }
 
     return true;
 }
@@ -125,19 +120,18 @@ bool rxs::FileLogWriter::writeLine(const char *data, size_t size)
     memcpy(buf.base, data, size);
     memcpy(buf.base + size, m_endl, N);
 
-    uv_mutex_lock(&m_buffersLock);
-
-    m_buffers.emplace_back(buf);
-    uv_async_send(&m_flushAsync);
-
-    uv_mutex_unlock(&m_buffersLock);
+    {
+        std::lock_guard<std::mutex> lock(m_buffersLock);
+        m_buffers.emplace_back(buf);
+        uv_async_send(&m_flushAsync);
+    }
 
     return true;
 }
 
 void rxs::FileLogWriter::flush()
 {
-    uv_mutex_lock(&m_buffersLock);
+    std::lock_guard<std::mutex> lock(m_buffersLock);
 
     for (uv_buf_t buf : m_buffers) {
         uv_fs_t* req = new uv_fs_t;
@@ -147,6 +141,4 @@ void rxs::FileLogWriter::flush()
         m_pos += buf.len;
     }
     m_buffers.clear();
-
-    uv_mutex_unlock(&m_buffersLock);
 }

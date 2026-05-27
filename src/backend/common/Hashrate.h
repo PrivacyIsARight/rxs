@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 
 #include "3rdparty/rapidjson/fwd.h"
@@ -71,11 +72,11 @@ private:
     constexpr static size_t kBucketMask = kBucketSize - 1;
 
     size_t m_threads;
-    uint32_t* m_top;
-    uint64_t** m_counts;
-    uint64_t** m_timestamps;
-    uint64_t* m_countsBuf;
-    uint64_t* m_timestampsBuf;
+    std::unique_ptr<uint64_t[]> m_countsBuf;
+    std::unique_ptr<uint64_t[]> m_timestampsBuf;
+    std::unique_ptr<uint64_t*[]> m_counts;
+    std::unique_ptr<uint64_t*[]> m_timestamps;
+    std::unique_ptr<uint32_t[]>  m_top;
 
     uint64_t m_earliestTimestamp;
     uint64_t m_totalCount;
