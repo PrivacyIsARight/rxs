@@ -184,12 +184,14 @@ public:
         printDatasetReady(id, ts);
 
         if (m_datasets.size() > 1) {
+            m_threads.reserve(m_datasets.size() - 1);
+            const void *primaryRaw = primary->raw();
             for (auto const &item : m_datasets) {
                 if (item.first == id) {
                     continue;
                 }
 
-                m_threads.emplace_back(copyDataset, item.second, item.first, primary->raw());
+                m_threads.emplace_back(copyDataset, item.second, item.first, primaryRaw);
             }
 
             join();

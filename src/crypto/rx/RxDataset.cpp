@@ -175,7 +175,7 @@ uint8_t *rxs::RxDataset::tryAllocateScrathpad()
         return nullptr;
     }
 
-    const size_t offset = m_scratchpadOffset.fetch_add(RANDOMX_SCRATCHPAD_L3_MAX_SIZE);
+    const size_t offset = m_scratchpadOffset.fetch_add(RANDOMX_SCRATCHPAD_L3_MAX_SIZE, std::memory_order_relaxed);
     if (offset + RANDOMX_SCRATCHPAD_L3_MAX_SIZE > m_scratchpadLimit) {
         return nullptr;
     }
@@ -196,8 +196,45 @@ void rxs::RxDataset::setRaw(const void *raw)
         return;
     }
 
-    const size_t N = maxSize();
-    memcpy(randomx_get_dataset_memory(m_dataset), raw, N);
+    const size_t N     = maxSize();
+    uint8_t      *dst  = static_cast<uint8_t *>(randomx_get_dataset_memory(m_dataset));
+    const uint8_t *src = static_cast<const uint8_t *>(raw);
+
+    const uint32_t numThreads = std::min(std::thread::hardware_concurrency(), 8u);
+
+    if (numThreads <= 1) {
+        memcpy(dst, src, N);
+        return;
+    }
+
+    std::vector<std::thread> threads;
+    threads.reserve(numThreads);
+
+    const size_t chunkSize = (N + numThreads - 1) / numThreads;
+
+    try {
+        for (uint32_t i = 0; i < numThreads; ++i) {
+            const size_t offset = static_cast<size_t>(i) * chunkSize;
+            if (offset >= N) {
+                break;
+            }
+            const size_t bytes = std::min(chunkSize, N - offset);
+            threads.emplace_back([dst, src, offset, bytes]() {
+                memcpy(dst + offset, src + offset, bytes);
+            });
+        }
+    }
+    catch (...) {
+        for (auto &t : threads) {
+            t.join();
+        }
+        memcpy(dst, src, N);
+        return;
+    }
+
+    for (auto &t : threads) {
+        t.join();
+    }
 }
 
 

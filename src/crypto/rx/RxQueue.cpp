@@ -136,7 +136,7 @@ void rxs::RxQueue::backgroundInit()
             continue;
         }
 
-        const auto item = *m_pending;
+        auto item = std::move(*m_pending);
         m_pending.reset();
 
         lock.unlock();
