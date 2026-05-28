@@ -23,9 +23,9 @@ jobs:
         with:
           usesh: true
           prepare: |
-            pkg install -y git cmake libuv openssl hwloc
+            pkg install -y git cmake libuv openssl hwloc gmake
           run: |
             mkdir -p build
             cd build
             cmake ..
-            make -j$(sysctl -n kern.smp.cpus)
+            gmake -j$(sysctl -n kern.smp.cpus)
