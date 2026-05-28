@@ -1,31 +1,49 @@
-name: Linux build test
+name: Build Linux
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master", "main" ]
-
-permissions:
-  contents: read
+    branches: [ "main" ]
 
 jobs:
-  build-linux:
-    name: Build rxs on ubuntu linux
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    env:
+      CC: gcc-14
+      CXX: g++-14
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      with:
+        persist-credentials: false
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libhwloc-dev \
+          libuv1-dev \
+          libssl-dev \
+          make \
+          cmake
 
-      - name: Build rxs
-        run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make -j$(nproc)
+    - name: Ensure gcc-14 / g++-14 are available
+      run: |
+        if ! command -v gcc-14 > /dev/null 2>&1; then
+          echo "gcc-14 not found, installing..."
+          sudo apt-get install -y gcc-14 g++-14
+        fi
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 \
+          --slave /usr/bin/g++ g++ /usr/bin/g++-14
+        gcc --version
+
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make -j$(nproc)

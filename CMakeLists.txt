@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
-project(rxs)
+cmake_minimum_required(VERSION 3.30)
+project(rxs LANGUAGES C CXX ASM)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(WITH_HWLOC           "Enable hwloc support" ON)
