@@ -190,6 +190,8 @@ void *rxs::Workers<T>::onReady(void *arg)
 template<class T>
 void rxs::Workers<T>::start(const std::vector<T> &data)
 {
+    m_workers.reserve(data.size());
+
     for (const auto &item : data) {
         m_workers.push_back(new Thread<T>(d_ptr->backend, m_workers.size(), item));
     }
