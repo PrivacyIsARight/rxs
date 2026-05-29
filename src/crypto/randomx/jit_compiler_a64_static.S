@@ -1,29 +1,29 @@
-# Copyright (c) 2018-2019, tevador <tevador@gmail.com>
-# Copyright (c) 2019, SChernykh    <https://github.com/SChernykh>
-#
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-# 	* Redistributions of source code must retain the above copyright
-# 	  notice, this list of conditions and the following disclaimer.
-# 	* Redistributions in binary form must reproduce the above copyright
-# 	  notice, this list of conditions and the following disclaimer in the
-# 	  documentation and/or other materials provided with the distribution.
-# 	* Neither the name of the copyright holder nor the
-# 	  names of its contributors may be used to endorse or promote products
-# 	  derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/* Copyright (c) 2018-2019, tevador <tevador@gmail.com>
+Copyright (c) 2019, SChernykh    <https://github.com/SChernykh>
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+	* Redistributions of source code must retain the above copyright
+	  notice, this list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright
+	  notice, this list of conditions and the following disclaimer in the
+	  documentation and/or other materials provided with the distribution.
+	* Neither the name of the copyright holder nor the
+	  names of its contributors may be used to endorse or promote products
+	  derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #define DECL(x) x
 
@@ -57,61 +57,61 @@
 	.global DECL(randomx_calc_dataset_item_aarch64_store_result)
 	.global DECL(randomx_calc_dataset_item_aarch64_end)
 
-# Register allocation
+// Register allocation
 
-# x0  -> pointer to reg buffer and then literal for IMUL_RCP
-# x1  -> pointer to mem buffer and then to dataset
-# x2  -> pointer to scratchpad
-# x3  -> loop counter
-# x4  -> "r0"
-# x5  -> "r1"
-# x6  -> "r2"
-# x7  -> "r3"
-# x8  -> fpcr (reversed bits)
-# x9  -> mx, ma
-# x10 -> spMix1
-# x11 -> literal for IMUL_RCP
-# x12 -> "r4"
-# x13 -> "r5"
-# x14 -> "r6"
-# x15 -> "r7"
-# x16 -> spAddr0
-# x17 -> spAddr1
-# x18 -> unused (platform register, don't touch it)
-# x19 -> temporary
-# x20 -> temporary
-# x21 -> literal for IMUL_RCP
-# x22 -> literal for IMUL_RCP
-# x23 -> literal for IMUL_RCP
-# x24 -> literal for IMUL_RCP
-# x25 -> literal for IMUL_RCP
-# x26 -> literal for IMUL_RCP
-# x27 -> literal for IMUL_RCP
-# x28 -> literal for IMUL_RCP
-# x29 -> literal for IMUL_RCP
-# x30 -> literal for IMUL_RCP
+// x0  -> pointer to reg buffer and then literal for IMUL_RCP
+// x1  -> pointer to mem buffer and then to dataset
+// x2  -> pointer to scratchpad
+// x3  -> loop counter
+// x4  -> "r0"
+// x5  -> "r1"
+// x6  -> "r2"
+// x7  -> "r3"
+// x8  -> fpcr (reversed bits)
+// x9  -> mx, ma
+// x10 -> spMix1
+// x11 -> literal for IMUL_RCP
+// x12 -> "r4"
+// x13 -> "r5"
+// x14 -> "r6"
+// x15 -> "r7"
+// x16 -> spAddr0
+// x17 -> spAddr1
+// x18 -> unused (platform register, don't touch it)
+// x19 -> temporary
+// x20 -> temporary
+// x21 -> literal for IMUL_RCP
+// x22 -> literal for IMUL_RCP
+// x23 -> literal for IMUL_RCP
+// x24 -> literal for IMUL_RCP
+// x25 -> literal for IMUL_RCP
+// x26 -> literal for IMUL_RCP
+// x27 -> literal for IMUL_RCP
+// x28 -> literal for IMUL_RCP
+// x29 -> literal for IMUL_RCP
+// x30 -> literal for IMUL_RCP
 
-# v0-v15 -> store 32-bit literals
-# v16 -> "f0"
-# v17 -> "f1"
-# v18 -> "f2"
-# v19 -> "f3"
-# v20 -> "e0"
-# v21 -> "e1"
-# v22 -> "e2"
-# v23 -> "e3"
-# v24 -> "a0"
-# v25 -> "a1"
-# v26 -> "a2"
-# v27 -> "a3"
-# v28 -> temporary
-# v29 -> E 'and' mask = 0x00ffffffffffffff'00ffffffffffffff
-# v30 -> E 'or' mask  = 0x3*00000000******'3*00000000******
-# v31 -> scale mask   = 0x80f0000000000000'80f0000000000000
+// v0-v15 -> store 32-bit literals
+// v16 -> "f0"
+// v17 -> "f1"
+// v18 -> "f2"
+// v19 -> "f3"
+// v20 -> "e0"
+// v21 -> "e1"
+// v22 -> "e2"
+// v23 -> "e3"
+// v24 -> "a0"
+// v25 -> "a1"
+// v26 -> "a2"
+// v27 -> "a3"
+// v28 -> temporary
+// v29 -> E 'and' mask = 0x00ffffffffffffff'00ffffffffffffff
+// v30 -> E 'or' mask  = 0x3*00000000******'3*00000000******
+// v31 -> scale mask   = 0x80f0000000000000'80f0000000000000
 
 	.balign 4
 DECL(randomx_program_aarch64):
-	# Save callee-saved registers
+	// Save callee-saved registers
 	sub	sp, sp, 192
 	stp	x16, x17, [sp]
 	str	x19, [sp, 16]
@@ -126,7 +126,7 @@ DECL(randomx_program_aarch64):
 	stp	d12, d13, [sp, 160]
 	stp	d14, d15, [sp, 176]
 
-	# Zero integer registers
+	// Zero integer registers
 	mov	x4, xzr
 	mov	x5, xzr
 	mov	x6, xzr
@@ -136,34 +136,34 @@ DECL(randomx_program_aarch64):
 	mov	x14, xzr
 	mov	x15, xzr
 
-	# Load ma, mx and dataset pointer
+	// Load ma, mx and dataset pointer
 	ldp	x9, x1, [x1]
 
-	# Load initial spMix value
+	// Load initial spMix value
 	mov	x10, x9
 
-	# Load group A registers
+	// Load group A registers
 	ldp	q24, q25, [x0, 192]
 	ldp	q26, q27, [x0, 224]
 
-	# Load E 'and' mask
+	// Load E 'and' mask
 	movi	v29.2d, #0x00FFFFFFFFFFFFFF
 
-	# Load E 'or' mask (stored in reg.f[0])
+	// Load E 'or' mask (stored in reg.f[0])
 	ldr	q30, [x0, 64]
 
-	# Load scale mask
+	// Load scale mask
 	mov	x16, 0x80f0000000000000
 	dup	v31.2d, x16
 
-	# Read fpcr
+	// Read fpcr
 	mrs	x8, fpcr
 	rbit	x8, x8
 
-	# Save x0
+	// Save x0
 	str	x0, [sp, -16]!
 
-	# Read literals
+	// Read literals
 	adr	x30, literal_v0
 	ldp	q0, q1, [x30]
 	ldp	q2, q3, [x30, 32]
@@ -182,20 +182,20 @@ DECL(randomx_program_aarch64):
 	ldp	x29, x30, [x30, -16]	// literal_x29
 
 DECL(randomx_program_aarch64_main_loop):
-	# spAddr0 = spMix1 & ScratchpadL3Mask64;
-	# spAddr1 = (spMix1 >> 32) & ScratchpadL3Mask64;
+	// spAddr0 = spMix1 & ScratchpadL3Mask64;
+	// spAddr1 = (spMix1 >> 32) & ScratchpadL3Mask64;
 	lsr	x20, x10, 32
 
-	# Actual mask will be inserted by JIT compiler
+	// Actual mask will be inserted by JIT compiler
 	and	w16, w10, 1
 	and	w17, w20, 1
 
-	# x16 = scratchpad + spAddr0
-	# x17 = scratchpad + spAddr1
+	// x16 = scratchpad + spAddr0
+	// x17 = scratchpad + spAddr1
 	add	x16, x16, x2
 	add	x17, x17, x2
 
-	# xor integer registers with scratchpad data (spAddr0)
+	// xor integer registers with scratchpad data (spAddr0)
 	ldp	x20, x19, [x16]
 	eor	x4, x4, x20
 	eor	x5, x5, x19
@@ -209,7 +209,7 @@ DECL(randomx_program_aarch64_main_loop):
 	eor	x14, x14, x20
 	eor	x15, x15, x19
 
-	# Load group F registers (spAddr1)
+	// Load group F registers (spAddr1)
 	ldr	q17, [x17]
 	sxtl	v16.2d, v17.2s
 	scvtf	v16.2d, v16.2d
@@ -222,7 +222,7 @@ DECL(randomx_program_aarch64_main_loop):
 	sxtl2	v19.2d, v19.4s
 	scvtf	v19.2d, v19.2d
 
-	# Load group E registers (spAddr1)
+	// Load group E registers (spAddr1)
 	ldr	q21, [x17, 32]
 	sxtl	v20.2d, v21.2s
 	scvtf	v20.2d, v20.2d
@@ -244,10 +244,10 @@ DECL(randomx_program_aarch64_main_loop):
 	orr	v22.16b, v22.16b, v30.16b
 	orr	v23.16b, v23.16b, v30.16b
 
-	# Execute VM instructions
+	// Execute VM instructions
 DECL(randomx_program_aarch64_vm_instructions):
 
-	# 24 KB buffer for generated instructions
+	// 24 KB buffer for generated instructions
 	.fill 6144,4,0
 
 literal_x0:  .fill 1,8,0
@@ -282,34 +282,34 @@ literal_v14: .fill 2,8,0
 literal_v15: .fill 2,8,0
 
 DECL(randomx_program_aarch64_vm_instructions_end):
-	# Calculate dataset pointer for dataset read
-	# Do it here to break false dependency from readReg2 and readReg3 (see next line)
+	// Calculate dataset pointer for dataset read
+	// Do it here to break false dependency from readReg2 and readReg3 (see next line)
 	lsr	x10, x9, 32
 
-	# mx ^= r[readReg2] ^ r[readReg3];
+	// mx ^= r[readReg2] ^ r[readReg3];
 	eor	x9, x9, x20
 
-	# Calculate dataset pointer for dataset prefetch
+	// Calculate dataset pointer for dataset prefetch
 	mov	w20, w9
 
-	# mx <-> ma
+	// mx <-> ma
 	ror	x9, x9, 32
 
 DECL(randomx_program_aarch64_cacheline_align_mask1):
-	# Actual mask will be inserted by JIT compiler
+	// Actual mask will be inserted by JIT compiler
 	and	x20, x20, 1
 	add	x20, x20, x1
 
-	# Prefetch dataset data
+	// Prefetch dataset data
 	prfm	pldl2strm, [x20]
 
 DECL(randomx_program_aarch64_cacheline_align_mask2):
-	# Actual mask will be inserted by JIT compiler
+	// Actual mask will be inserted by JIT compiler
 	and	x10, x10, 1
 	add	x10, x10, x1
 
 DECL(randomx_program_aarch64_xor_with_dataset_line):
-	# xor integer registers with dataset data
+	// xor integer registers with dataset data
 	ldp	x20, x19, [x10]
 	eor	x4, x4, x20
 	eor	x5, x5, x19
@@ -324,24 +324,24 @@ DECL(randomx_program_aarch64_xor_with_dataset_line):
 	eor	x15, x15, x19
 
 DECL(randomx_program_aarch64_update_spMix1):
-	# JIT compiler will replace it with "eor x10, config.readReg0, config.readReg1"
+	// JIT compiler will replace it with "eor x10, config.readReg0, config.readReg1"
 	eor	x10, x0, x0
 
-	# Store integer registers to scratchpad (spAddr1)
+	// Store integer registers to scratchpad (spAddr1)
 	stp	x4, x5, [x17, 0]
 	stp	x6, x7, [x17, 16]
 	stp	x12, x13, [x17, 32]
 	stp	x14, x15, [x17, 48]
 
-	# RandomX v2 AES tweak (mix group F and group E registers using AES)
+	// RandomX v2 AES tweak (mix group F and group E registers using AES)
 DECL(randomx_program_aarch64_v2_FE_mix):
 
-	# Jump to v1 FE mix code if we're running RandomX v1
-	# JIT compiler will write a "movi v28.4s, 0" (set v28 to all 0) here if we're running RandomX v2
-	# Or, JIT compiler will write a "b randomx_program_aarch64_v2_FE_mix_soft_aes" if we're running RandomX v2 with soft AES
+	// Jump to v1 FE mix code if we're running RandomX v1
+	// JIT compiler will write a "movi v28.4s, 0" (set v28 to all 0) here if we're running RandomX v2
+	// Or, JIT compiler will write a "b randomx_program_aarch64_v2_FE_mix_soft_aes" if we're running RandomX v2 with soft AES
 	b DECL(randomx_program_aarch64_v1_FE_mix)
 
-	# f0 = aesenc(f0, e0), f1 = aesdec(f1, e0), f2 = aesenc(f2, e0), f3 = aesdec(f3, e0)
+	// f0 = aesenc(f0, e0), f1 = aesdec(f1, e0), f2 = aesenc(f2, e0), f3 = aesdec(f3, e0)
 
 	aese	v16.16b, v28.16b
 	aesd	v17.16b, v28.16b
@@ -358,7 +358,7 @@ DECL(randomx_program_aarch64_v2_FE_mix):
 	eor	v18.16b, v18.16b, v20.16b
 	eor	v19.16b, v19.16b, v20.16b
 
-	# f0 = aesenc(f0, e1), f1 = aesdec(f1, e1), f2 = aesenc(f2, e1), f3 = aesdec(f3, e1)
+	// f0 = aesenc(f0, e1), f1 = aesdec(f1, e1), f2 = aesenc(f2, e1), f3 = aesdec(f3, e1)
 
 	aese	v16.16b, v28.16b
 	aesd	v17.16b, v28.16b
@@ -375,7 +375,7 @@ DECL(randomx_program_aarch64_v2_FE_mix):
 	eor	v18.16b, v18.16b, v21.16b
 	eor	v19.16b, v19.16b, v21.16b
 
-	# f0 = aesenc(f0, e2), f1 = aesdec(f1, e2), f2 = aesenc(f2, e2), f3 = aesdec(f3, e2)
+	// f0 = aesenc(f0, e2), f1 = aesdec(f1, e2), f2 = aesenc(f2, e2), f3 = aesdec(f3, e2)
 
 	aese	v16.16b, v28.16b
 	aesd	v17.16b, v28.16b
@@ -392,7 +392,7 @@ DECL(randomx_program_aarch64_v2_FE_mix):
 	eor	v18.16b, v18.16b, v22.16b
 	eor	v19.16b, v19.16b, v22.16b
 
-	# f0 = aesenc(f0, e3), f1 = aesdec(f1, e3), f2 = aesenc(f2, e3), f3 = aesdec(f3, e3)
+	// f0 = aesenc(f0, e3), f1 = aesdec(f1, e3), f2 = aesenc(f2, e3), f3 = aesdec(f3, e3)
 
 	aese	v16.16b, v28.16b
 	aesd	v17.16b, v28.16b
@@ -409,7 +409,7 @@ DECL(randomx_program_aarch64_v2_FE_mix):
 	eor	v18.16b, v18.16b, v23.16b
 	eor	v19.16b, v19.16b, v23.16b
 
-	# Skip v1 FE mix code because we already did v2 FE mix
+	// Skip v1 FE mix code because we already did v2 FE mix
 	b randomx_program_aarch64_FE_store
 
 DECL(randomx_program_aarch64_v1_FE_mix):
@@ -420,29 +420,29 @@ DECL(randomx_program_aarch64_v1_FE_mix):
 
 randomx_program_aarch64_FE_store:
 
-	# Store FP registers to scratchpad (spAddr0)
+	// Store FP registers to scratchpad (spAddr0)
 	stp	q16, q17, [x16, 0]
 	stp	q18, q19, [x16, 32]
 
 	subs	x3, x3, 1
 	bne	DECL(randomx_program_aarch64_main_loop)
 	
-	# Restore x0
+	// Restore x0
 	ldr	x0, [sp], 16
 
-	# Store integer registers
+	// Store integer registers
 	stp	x4, x5, [x0, 0]
 	stp	x6, x7, [x0, 16]
 	stp	x12, x13, [x0, 32]
 	stp	x14, x15, [x0, 48]
 
-	# Store FP registers
+	// Store FP registers
 	stp	q16, q17, [x0, 64]
 	stp	q18, q19, [x0, 96]
 	stp	q20, q21, [x0, 128]
 	stp	q22, q23, [x0, 160]
 
-	# Restore callee-saved registers
+	// Restore callee-saved registers
 	ldp	x16, x17, [sp]
 	ldr	x19, [sp, 16]
 	ldp	x20, x21, [sp, 32]
@@ -467,27 +467,27 @@ DECL(randomx_program_aarch64_vm_instructions_end_light):
 	lsr	x2, x9, 32
 
 DECL(randomx_program_aarch64_light_cacheline_align_mask):
-	# Actual mask will be inserted by JIT compiler
+	// Actual mask will be inserted by JIT compiler
 	and	w2, w2, 1
 
 DECL(randomx_program_aarch64_vm_instructions_end_light_tweak):
-	# mx ^= r[readReg2] ^ r[readReg3];
+	// mx ^= r[readReg2] ^ r[readReg3];
 	eor	x9, x9, x20
 
-	# mx <-> ma
+	// mx <-> ma
 	ror	x9, x9, 32
 
-	# x0 -> pointer to cache memory
+	// x0 -> pointer to cache memory
 	mov	x0, x1
 
-	# x1 -> pointer to output
+	// x1 -> pointer to output
 	mov	x1, sp
 
-	# x2 -> item number
+	// x2 -> item number
 	lsr	x2, x2, 6
 
 DECL(randomx_program_aarch64_light_dataset_offset):
-	# Apply dataset offset (filled in by JIT compiler)
+	// Apply dataset offset (filled in by JIT compiler)
 	add	x2, x2, 0
 	add	x2, x2, 0
 
@@ -537,7 +537,7 @@ DECL(randomx_program_aarch64_v2_FE_mix_soft_aes):
 	adr	x19, DECL(randomx_program_aarch64_aes_lut_pointers)
 	ldp	x19, x20, [x19]
 
-	# f0 = aesenc(f0, e0), f0 = aesenc(f0, e1), f0 = aesenc(f0, e2), f0 = aesenc(f0, e3)
+	// f0 = aesenc(f0, e0), f0 = aesenc(f0, e1), f0 = aesenc(f0, e2), f0 = aesenc(f0, e3)
 	mov	v0.16b, v16.16b
 	mov	v1.16b, v20.16b
 	bl	randomx_soft_aesenc
@@ -549,7 +549,7 @@ DECL(randomx_program_aarch64_v2_FE_mix_soft_aes):
 	bl	randomx_soft_aesenc
 	mov	v16.16b, v0.16b
 
-	# f1 = aesdec(f1, e0), f1 = aesdec(f1, e1), f1 = aesdec(f1, e2), f1 = aesdec(f1, e3)
+	// f1 = aesdec(f1, e0), f1 = aesdec(f1, e1), f1 = aesdec(f1, e2), f1 = aesdec(f1, e3)
 	mov	v0.16b, v17.16b
 	mov	v1.16b, v20.16b
 	bl	randomx_soft_aesdec
@@ -561,7 +561,7 @@ DECL(randomx_program_aarch64_v2_FE_mix_soft_aes):
 	bl	randomx_soft_aesdec
 	mov	v17.16b, v0.16b
 
-	# f2 = aesenc(f2, e0), f2 = aesenc(f2, e1), f2 = aesenc(f2, e2), f2 = aesenc(f2, e3)
+	// f2 = aesenc(f2, e0), f2 = aesenc(f2, e1), f2 = aesenc(f2, e2), f2 = aesenc(f2, e3)
 	mov	v0.16b, v18.16b
 	mov	v1.16b, v20.16b
 	bl	randomx_soft_aesenc
@@ -573,7 +573,7 @@ DECL(randomx_program_aarch64_v2_FE_mix_soft_aes):
 	bl	randomx_soft_aesenc
 	mov	v18.16b, v0.16b
 
-	# f3 = aesdec(f3, e0), f3 = aesdec(f3, e1), f3 = aesdec(f3, e2), f3 = aesdec(f3, e3)
+	// f3 = aesdec(f3, e0), f3 = aesdec(f3, e1), f3 = aesdec(f3, e2), f3 = aesdec(f3, e3)
 	mov	v0.16b, v19.16b
 	mov	v1.16b, v20.16b
 	bl	randomx_soft_aesdec
@@ -733,18 +733,18 @@ DECL(randomx_program_aarch64_aes_lut_pointers):
 	.fill 2, 8, 0
 
 
-# Input parameters
-#
-# x0 -> pointer to cache
-# x1 -> pointer to dataset memory at startItem
-# x2 -> start item
-# x3 -> end item
+// Input parameters
+//
+// x0 -> pointer to cache
+// x1 -> pointer to dataset memory at startItem
+// x2 -> start item
+// x3 -> end item
 
 DECL(randomx_init_dataset_aarch64):
-	# Save x20 (used as temporary, but must be saved to not break ABI) and x30 (return address)
+	// Save x20 (used as temporary, but must be saved to not break ABI) and x30 (return address)
 	stp	x20, x30, [sp, -16]!
 
-	# Load pointer to cache memory
+	// Load pointer to cache memory
 	ldr	x0, [x0]
 
 DECL(randomx_init_dataset_aarch64_main_loop):
@@ -754,28 +754,28 @@ DECL(randomx_init_dataset_aarch64_main_loop):
 	cmp	x2, x3
 	bne	DECL(randomx_init_dataset_aarch64_main_loop)
 
-	# Restore x20 and x30
+	// Restore x20 and x30
 	ldp	x20, x30, [sp], 16
 
 	ret
 
 DECL(randomx_init_dataset_aarch64_end):
 
-# Input parameters
-#
-# x0 -> pointer to cache memory
-# x1 -> pointer to output
-# x2 -> item number
-#
-# Register allocation
-#
-# x0-x7 -> output value (calculated dataset item)
-# x8 -> pointer to cache memory
-# x9 -> pointer to output
-# x10 -> registerValue
-# x11 -> mixBlock
-# x12 -> temporary
-# x13 -> temporary
+// Input parameters
+//
+// x0 -> pointer to cache memory
+// x1 -> pointer to output
+// x2 -> item number
+//
+// Register allocation
+//
+// x0-x7 -> output value (calculated dataset item)
+// x8 -> pointer to cache memory
+// x9 -> pointer to output
+// x10 -> registerValue
+// x11 -> mixBlock
+// x12 -> temporary
+// x13 -> temporary
 
 DECL(randomx_calc_dataset_item_aarch64):
 	sub	sp, sp, 112
@@ -788,37 +788,37 @@ DECL(randomx_calc_dataset_item_aarch64):
 	stp	x12, x13, [sp, 96]
 
 	adr	x7, superscalarMul0
-	# superscalarMul0, superscalarAdd1
+	// superscalarMul0, superscalarAdd1
 	ldp	x12, x13, [x7]
 
 	ldp	x8, x9, [sp]
 	mov	x10, x2
 
-	# rl[0] = (itemNumber + 1) * superscalarMul0;
+	// rl[0] = (itemNumber + 1) * superscalarMul0;
 	madd	x0, x2, x12, x12
 
-	# rl[1] = rl[0] ^ superscalarAdd1;
+	// rl[1] = rl[0] ^ superscalarAdd1;
 	eor	x1, x0, x13
 
-	# rl[2] = rl[0] ^ superscalarAdd2;
+	// rl[2] = rl[0] ^ superscalarAdd2;
 	ldp	x12, x13, [x7, 16]
 	eor	x2, x0, x12
 
-	# rl[3] = rl[0] ^ superscalarAdd3;
+	// rl[3] = rl[0] ^ superscalarAdd3;
 	eor	x3, x0, x13
 
-	# rl[4] = rl[0] ^ superscalarAdd4;
+	// rl[4] = rl[0] ^ superscalarAdd4;
 	ldp	x12, x13, [x7, 32]
 	eor	x4, x0, x12
 
-	# rl[5] = rl[0] ^ superscalarAdd5;
+	// rl[5] = rl[0] ^ superscalarAdd5;
 	eor	x5, x0, x13
 
-	# rl[6] = rl[0] ^ superscalarAdd6;
+	// rl[6] = rl[0] ^ superscalarAdd6;
 	ldp	x12, x13, [x7, 48]
 	eor	x6, x0, x12
 
-	# rl[7] = rl[0] ^ superscalarAdd7;
+	// rl[7] = rl[0] ^ superscalarAdd7;
 	eor	x7, x0, x13
 
 	b	DECL(randomx_calc_dataset_item_aarch64_prefetch)
@@ -832,15 +832,15 @@ superscalarAdd5: .quad 10536153434571861004
 superscalarAdd6: .quad 3398623926847679864
 superscalarAdd7: .quad 9549104520008361294
 
-# Prefetch -> SuperScalar hash -> Mix will be repeated N times
+// Prefetch -> SuperScalar hash -> Mix will be repeated N times
 
 DECL(randomx_calc_dataset_item_aarch64_prefetch):
-	# Actual mask will be inserted by JIT compiler
+	// Actual mask will be inserted by JIT compiler
 	and	x11, x10, 1
 	add	x11, x8, x11, lsl 6
 	prfm	pldl2strm, [x11]
 
-	# Generated SuperScalar hash program goes here
+	// Generated SuperScalar hash program goes here
 
 DECL(randomx_calc_dataset_item_aarch64_mix):
 	ldp	x12, x13, [x11]
