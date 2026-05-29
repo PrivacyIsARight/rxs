@@ -23,7 +23,9 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <atomic>
 #include <cstdlib>
+#include <stdexcept>
 #include <uv.h>
 
 
@@ -40,11 +42,19 @@
 #include "version.h"
 
 
-rxs::App::App(Process *process)
+static rxs::Process *validatedProcess(rxs::Process *process)
 {
-    m_controller = std::make_shared<Controller>(process);
+    if (!process) {
+        throw std::invalid_argument("App: process must not be null");
+    }
+    return process;
 }
 
+rxs::App::App(Process *process) : m_controller(std::make_shared<Controller>(validatedProcess(process)))
+{
+    [[assume(process != nullptr)]];
+    [[assume(m_controller != nullptr)]];
+}
 
 rxs::App::~App()
 {
@@ -54,21 +64,20 @@ rxs::App::~App()
 
 int rxs::App::exec()
 {
-    if (!m_controller->isReady()) {
-        LOG_EMERG("no valid configuration found, try https://xmrig.com/wizard");
+    [[assume(m_controller != nullptr)]];
+    if (!m_controller->isReady()) [[unlikely]] {
+        LOG_EMERG("no valid configuration found");
 
         return 2;
     }
 
-    int rc = 0;
-    if (background(rc)) {
+    if (int rc = 0; background(rc)) [[unlikely]] {
         return rc;
-    }
 
+    }
     m_signals = std::make_shared<Signals>(this);
 
-    rc = m_controller->init();
-    if (rc != 0) {
+    if (const int rc = m_controller->init(); rc != 0) [[unlikely]] {
         return rc;
     }
 
@@ -78,7 +87,7 @@ int rxs::App::exec()
 
     Summary::print(m_controller.get());
 
-    if (m_controller->config()->isDryRun()) {
+    if (m_controller->config()->isDryRun()) [[unlikely]] {
         LOG_NOTICE("%s " WHITE_BOLD("OK"), Tags::config());
 
         return 0;
@@ -86,32 +95,42 @@ int rxs::App::exec()
 
     m_controller->start();
 
-    uv_loop_t* const loop = uv_default_loop();
-    if (loop != nullptr) {
-        rc = uv_run(loop, UV_RUN_DEFAULT);
-        if (uv_loop_close(loop) == UV_EBUSY) {
-            uv_run(loop, UV_RUN_NOWAIT);
-            uv_loop_close(loop);
+    if (auto* const loop = uv_default_loop()) [[likely]] {
+        const int rc = uv_run(loop, UV_RUN_DEFAULT);
+        int closeRes = uv_loop_close(loop);
+        if (closeRes == UV_EBUSY) [[unlikely]] {
+            (void) uv_run(loop, UV_RUN_NOWAIT);
+            closeRes = uv_loop_close(loop);
         }
-    }
+        if (closeRes != 0) [[unlikely]] {
+            LOG_EMERG("uv_loop_close failed: %s", uv_strerror(closeRes));
+            return EXIT_FAILURE;
+        }
 
-    return rc;
+        return rc;
+    }
+    LOG_EMERG("failed to acquire libuv default loop");
+    close();
+    return 1;
 }
 
 
-void rxs::App::onConsoleCommand(char command)
+void rxs::App::onConsoleCommand(const char command)
 {
-    if (command == 3) {
+    [[assume(m_controller != nullptr)]];
+
+    constexpr char ctrl_c = '\x03';
+    if (command == ctrl_c) [[unlikely]] {
         LOG_WARN("%s " SLATE_BOLD("Ctrl+C received, exiting"), Tags::signal());
         close();
     }
-    else {
+    else [[likely]] {
         m_controller->execCommand(command);
     }
 }
 
 
-void rxs::App::onSignal(int signum)
+void rxs::App::onSignal(const int signum)
 {
     switch (signum)
     {
@@ -119,7 +138,7 @@ void rxs::App::onSignal(int signum)
     case SIGTERM:
     case SIGINT:
         close();
-        return;
+        break;
 
     default:
         break;
@@ -129,6 +148,10 @@ void rxs::App::onSignal(int signum)
 
 void rxs::App::close()
 {
+    if (m_isClosing.exchange(true)) {
+        return;
+    }
+    [[assume(m_controller != nullptr)]];
     m_signals.reset();
     m_console.reset();
 
