@@ -28,6 +28,7 @@
 #include "crypto/rx/RxConfig.h"
 
 #include <atomic>
+#include <span>
 
 
 struct randomx_dataset;
@@ -50,20 +51,25 @@ public:
     RxDataset(RxCache *cache);
     ~RxDataset();
 
-    inline randomx_dataset *get() const     { return m_dataset; }
-    inline RxCache *cache() const           { return m_cache; }
-    inline void setCache(RxCache *cache)    { m_cache = cache; }
+    [[nodiscard]] inline randomx_dataset *get() const    { return m_dataset; }
+    [[nodiscard]] inline RxCache *cache() const          { return m_cache; }
+    inline void setCache(RxCache *cache)                 { m_cache = cache; }
 
     bool init(const Buffer &seed, uint32_t numThreads, int priority);
-    bool isHugePages() const;
-    bool isOneGbPages() const;
-    HugePagesInfo hugePages(bool cache = true) const;
-    size_t size(bool cache = true) const;
-    uint8_t *tryAllocateScrathpad();
-    void *raw() const;
-    void setRaw(const void *raw);
+    [[nodiscard]] bool isHugePages() const;
+    [[nodiscard]] bool isOneGbPages() const;
+    [[nodiscard]] HugePagesInfo hugePages(bool includeCache = true) const;
+    [[nodiscard]] size_t size(bool includeCache = true) const;
 
-    static inline constexpr size_t maxSize() { return RANDOMX_DATASET_MAX_SIZE; }
+    uint8_t *tryAllocateScrathpad();
+
+    [[nodiscard]] void *raw() const;
+    [[nodiscard]] std::span<const uint8_t> rawSpan() const noexcept;
+
+    void setRaw(const void *rawSrc);
+    static void parallelCopy(uint8_t *dst, const uint8_t *src, size_t n);
+
+    [[nodiscard]] static inline constexpr size_t maxSize() { return RANDOMX_DATASET_MAX_SIZE; }
 
 private:
     void allocate(bool hugePages, bool oneGbPages);
