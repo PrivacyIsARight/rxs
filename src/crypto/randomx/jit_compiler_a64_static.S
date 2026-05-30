@@ -27,7 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #define DECL(x) x
 
-	.arch_extension aes
 	.text
 	.global DECL(randomx_program_aarch64)
 	.global DECL(randomx_program_aarch64_main_loop)
