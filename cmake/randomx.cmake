@@ -61,8 +61,7 @@ if (WITH_RANDOMX)
              src/crypto/randomx/jit_compiler_a64_static.S
              src/crypto/randomx/jit_compiler_a64.cpp
             )
-        # cheat because cmake and ccache hate each other
-        set_property(SOURCE src/crypto/randomx/jit_compiler_a64_static.S PROPERTY LANGUAGE C)
+        set_property(SOURCE src/crypto/randomx/jit_compiler_a64_static.S PROPERTY LANGUAGE ASM)
         set_source_files_properties(src/crypto/randomx/jit_compiler_a64_static.S PROPERTIES COMPILE_FLAGS "${ARM8_CXX_FLAGS}")
     elseif (RXS_RISCV AND CMAKE_SIZEOF_VOID_P EQUAL 8)
         list(APPEND SOURCES_CRYPTO
