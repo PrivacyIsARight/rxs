@@ -21,7 +21,10 @@
 #define RXS_ALGORITHM_H
 
 
+#include <cstdint>
 #include <functional>
+#include <limits>
+#include <string_view>
 #include <vector>
 
 
@@ -55,47 +58,61 @@ public:
         RANDOM_X        = 0x72000000,
     };
 
-    static const char *kINVALID;
-    static const char *kRX;
-    static const char *kRX_0;
-    static const char *kRX_V2;
-    static const char *kRX_WOW;
-    static const char *kRX_ARQ;
-    static const char *kRX_GRAFT;
-    static const char *kRX_SFX;
-    static const char *kRX_YADA;
+    static constexpr const char *kINVALID  = "invalid";
+    static constexpr const char *kRX       = "rx";
+    static constexpr const char *kRX_0     = "rx/0";
+    static constexpr const char *kRX_V2    = "rx/2";
+    static constexpr const char *kRX_WOW   = "rx/wow";
+    static constexpr const char *kRX_ARQ   = "rx/arq";
+    static constexpr const char *kRX_GRAFT = "rx/graft";
+    static constexpr const char *kRX_SFX   = "rx/sfx";
+    static constexpr const char *kRX_YADA  = "rx/yada";
 
     inline Algorithm() = default;
-    inline Algorithm(const char *algo) : m_id(parse(algo))  {}
-    inline Algorithm(Id id) : m_id(id)                      {}
+    inline Algorithm(const char *algo) noexcept : m_id(parse(algo)) {}
+    inline Algorithm(std::string_view algo) noexcept : m_id(parse(algo)) {}
+    inline Algorithm(Id id) noexcept : m_id(id)                     {}
     Algorithm(const rapidjson::Value &value);
     Algorithm(uint32_t id);
 
-    static inline constexpr size_t l2(Id id)                { return family(id) == RANDOM_X ? (1U << ((id >> 8) & 0xff)) : 0U; }
-    static inline constexpr size_t l3(Id id)                { return 1ULL << ((id >> 16) & 0xff); }
-    static inline constexpr uint32_t family(Id id)          { return id & 0xff000000; }
+    static inline constexpr size_t l2(Id id) noexcept
+    {
+        if (family(id) != RANDOM_X) return 0u;
+        const uint32_t exp = (static_cast<uint32_t>(id) >> 8u) & 0xffu;
+        return exp <= 31u ? (size_t{1u} << exp) : 0u;
+    }
 
-    inline bool isEqual(const Algorithm &other) const       { return m_id == other.m_id; }
-    inline bool isValid() const                             { return m_id != INVALID && family() > UNKNOWN; }
-    inline Id id() const                                    { return m_id; }
-    inline size_t l2() const                                { return l2(m_id); }
-    inline uint32_t family() const                          { return family(m_id); }
-    inline uint32_t minIntensity() const                    { return 1; };
-    inline uint32_t maxIntensity() const                    { return 1; };
+    static inline constexpr size_t l3(Id id) noexcept
+    {
+        if (id == INVALID) return 0u;
+        const uint32_t exp = (static_cast<uint32_t>(id) >> 16u) & 0xffu;
+        return exp < std::numeric_limits<size_t>::digits ? (size_t{1u} << exp) : 0u;
+    }
 
-    inline size_t l3() const                                { return l3(m_id); }
+    static inline constexpr uint32_t family(Id id) noexcept { return static_cast<uint32_t>(id) & 0xff000000u; }
 
-    inline bool operator!=(Algorithm::Id id) const          { return m_id != id; }
-    inline bool operator!=(const Algorithm &other) const    { return !isEqual(other); }
-    inline bool operator==(Algorithm::Id id) const          { return m_id == id; }
-    inline bool operator==(const Algorithm &other) const    { return isEqual(other); }
-    inline operator Algorithm::Id() const                   { return m_id; }
+    inline bool isEqual(const Algorithm &other) const noexcept { return m_id == other.m_id; }
+    inline bool isValid() const noexcept                       { return nameView() != kINVALID; }
+    inline Id id() const noexcept                              { return m_id; }
+    inline size_t l2() const noexcept                          { return l2(m_id); }
+    inline size_t l3() const noexcept                          { return l3(m_id); }
+    inline uint32_t family() const noexcept                    { return family(m_id); }
+    inline uint32_t minIntensity() const noexcept              { return 1; }
+    inline uint32_t maxIntensity() const noexcept              { return 1; }
 
-    const char *name() const;
+    inline bool operator!=(Algorithm::Id id) const noexcept       { return m_id != id; }
+    inline bool operator!=(const Algorithm &other) const noexcept { return !isEqual(other); }
+    inline bool operator==(Algorithm::Id id) const noexcept       { return m_id == id; }
+    inline bool operator==(const Algorithm &other) const noexcept { return isEqual(other); }
+    inline operator Algorithm::Id() const noexcept                { return m_id; }
+
+    const char *name() const noexcept;
+    std::string_view nameView() const noexcept;
     rapidjson::Value toJSON() const;
     rapidjson::Value toJSON(rapidjson::Document &doc) const;
 
-    static Id parse(const char *name);
+    static Id parse(const char *name) noexcept;
+    static Id parse(std::string_view name) noexcept;
     static size_t count();
     static std::vector<Algorithm> all(const std::function<bool(const Algorithm &algo)> &filter = nullptr);
 

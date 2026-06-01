@@ -19,69 +19,96 @@
 
 #include "base/crypto/Algorithm.h"
 #include "3rdparty/rapidjson/document.h"
-#include "base/tools/String.h"
 
 
+#include <algorithm>
+#include <array>
 #include <cassert>
-#include <cstdio>
-#include <cstdlib>
-#include <map>
-
-
-#ifdef _MSC_VER
-#   define strcasecmp  _stricmp
-#endif
+#include <ranges>
 
 
 namespace rxs {
 
 
-const char *Algorithm::kINVALID   = "invalid";
-const char *Algorithm::kRX        = "rx";
-const char *Algorithm::kRX_0      = "rx/0";
-const char *Algorithm::kRX_V2     = "rx/2";
-const char *Algorithm::kRX_WOW    = "rx/wow";
-const char *Algorithm::kRX_ARQ    = "rx/arq";
-const char *Algorithm::kRX_GRAFT  = "rx/graft";
-const char *Algorithm::kRX_SFX    = "rx/sfx";
-const char *Algorithm::kRX_YADA   = "rx/yada";
-
-
-#define ALGO_NAME(ALGO)         { Algorithm::ALGO, Algorithm::k##ALGO }
-#define ALGO_ALIAS(ALGO, NAME)  { NAME, Algorithm::ALGO }
-#define ALGO_ALIAS_AUTO(ALGO)   { Algorithm::k##ALGO, Algorithm::ALGO }
-
-
-static const std::map<uint32_t, const char *> kAlgorithmNames = {
-    ALGO_NAME(RX_0),
-    ALGO_NAME(RX_V2),
-    ALGO_NAME(RX_WOW),
-    ALGO_NAME(RX_ARQ),
-    ALGO_NAME(RX_GRAFT),
-    ALGO_NAME(RX_SFX),
-    ALGO_NAME(RX_YADA),
+struct NameEntry {
+    Algorithm::Id    id;
+    std::string_view name;
 };
 
+static constexpr std::array<NameEntry, 7> kNames {{
+    { Algorithm::RX_ARQ,   Algorithm::kRX_ARQ   },
+    { Algorithm::RX_WOW,   Algorithm::kRX_WOW   },
+    { Algorithm::RX_0,     Algorithm::kRX_0     },
+    { Algorithm::RX_V2,    Algorithm::kRX_V2    },
+    { Algorithm::RX_GRAFT, Algorithm::kRX_GRAFT },
+    { Algorithm::RX_SFX,   Algorithm::kRX_SFX   },
+    { Algorithm::RX_YADA,  Algorithm::kRX_YADA  },
+}};
 
-struct aliasCompare
+struct AliasEntry {
+    std::string_view alias;
+    Algorithm::Id    id;
+};
+
+static constexpr std::array<AliasEntry, 14> kAliases {{
+    { "randomarq",   Algorithm::RX_ARQ   },
+    { "randomgraft", Algorithm::RX_GRAFT },
+    { "randomsfx",   Algorithm::RX_SFX   },
+    { "randomwow",   Algorithm::RX_WOW   },
+    { "randomx",     Algorithm::RX_0     },
+    { "randomyada",  Algorithm::RX_YADA  },
+    { "rx",          Algorithm::RX_0     },
+    { "rx/0",        Algorithm::RX_0     },
+    { "rx/2",        Algorithm::RX_V2    },
+    { "rx/arq",      Algorithm::RX_ARQ   },
+    { "rx/graft",    Algorithm::RX_GRAFT },
+    { "rx/sfx",      Algorithm::RX_SFX   },
+    { "rx/wow",      Algorithm::RX_WOW   },
+    { "rx/yada",     Algorithm::RX_YADA  },
+}};
+
+static_assert([] {
+    for (size_t i = 1; i < kNames.size(); ++i)
+        if (kNames[i].id <= kNames[i-1].id) return false;
+    return true;
+}(), "kNames must be sorted by id");
+
+static_assert([] {
+    for (size_t i = 1; i < kAliases.size(); ++i)
+        if (kAliases[i].alias <= kAliases[i-1].alias) return false;
+    return true;
+}(), "kAliases must be sorted lexicographically");
+
+static constexpr size_t kMaxAliasLen = [] {
+    size_t max = 0;
+    for (const auto &e : kAliases)
+        if (e.alias.size() > max) max = e.alias.size();
+    return max;
+}();
+
+
+static constexpr unsigned char ascii_lower_u(char c) noexcept
 {
-   inline bool operator()(const char *a, const char *b) const   { return strcasecmp(a, b) < 0; }
-};
+    const auto u = static_cast<unsigned char>(c);
+    return (u >= 'A' && u <= 'Z') ? static_cast<unsigned char>(u | 0x20u) : u;
+}
 
 
-static const std::map<const char *, Algorithm::Id, aliasCompare> kAlgorithmAliases = {
-    ALGO_ALIAS_AUTO(RX_0),      ALGO_ALIAS(RX_0,    "randomx"),
-                                ALGO_ALIAS(RX_0,    "rx"),
-    ALGO_ALIAS_AUTO(RX_V2),
-    ALGO_ALIAS_AUTO(RX_WOW),    ALGO_ALIAS(RX_WOW,  "randomwow"),
-    ALGO_ALIAS_AUTO(RX_ARQ),    ALGO_ALIAS(RX_ARQ,  "randomarq"),
-    ALGO_ALIAS_AUTO(RX_GRAFT),  ALGO_ALIAS(RX_GRAFT,"randomgraft"),
-    ALGO_ALIAS_AUTO(RX_SFX),    ALGO_ALIAS(RX_SFX,  "randomsfx"),
-    ALGO_ALIAS_AUTO(RX_YADA),   ALGO_ALIAS(RX_YADA, "randomyada"),
-};
+static constexpr int ci_compare(std::string_view a, std::string_view b) noexcept
+{
+    const size_t n = std::min(a.size(), b.size());
+    for (size_t i = 0; i < n; ++i) {
+        const int d = static_cast<int>(ascii_lower_u(a[i]))
+                    - static_cast<int>(static_cast<unsigned char>(b[i]));
+        if (d != 0) return d;
+    }
+    if (a.size() < b.size()) return -1;
+    if (a.size() > b.size()) return  1;
+    return 0;
+}
 
 
-Algorithm::Algorithm(const rapidjson::Value &value) : m_id(parse(value.IsString() ? value.GetString() : nullptr))
+Algorithm::Algorithm(const rapidjson::Value &value) : m_id(value.IsString() ? parse(std::string_view(value.GetString(), value.GetStringLength())) : INVALID)
 {
 }
 
@@ -92,14 +119,22 @@ Algorithm::Algorithm(uint32_t id) : m_id(static_cast<Id>(id))
 }
 
 
-const char *Algorithm::name() const
+std::string_view Algorithm::nameView() const noexcept
 {
-    auto it = kAlgorithmNames.find(m_id);
-    if (it != kAlgorithmNames.end()) {
-        return it->second;
+    const auto it = std::lower_bound(kNames.begin(), kNames.end(), m_id,
+        [](const NameEntry &e, Id v) noexcept { return e.id < v; });
+
+    if (it != kNames.end() && it->id == m_id) {
+        return it->name;
     }
 
     return kINVALID;
+}
+
+
+const char *Algorithm::name() const noexcept
+{
+    return nameView().data();
 }
 
 
@@ -115,38 +150,46 @@ rapidjson::Value Algorithm::toJSON(rapidjson::Document &doc) const
 }
 
 
-Algorithm::Id Algorithm::parse(const char *name)
+Algorithm::Id Algorithm::parse(std::string_view name) noexcept
 {
-    if (name == nullptr || strlen(name) < 2) {
-        return INVALID;
-    }
+    if (name.size() < 2 || name.size() > kMaxAliasLen) return INVALID;
 
-    auto it = kAlgorithmAliases.find(name);
-    if (it != kAlgorithmAliases.end()) {
-        return it->second;
+    size_t lo = 0, hi = kAliases.size();
+    while (lo < hi) {
+        const size_t mid = lo + (hi - lo) / 2u;
+        const int cmp = ci_compare(name, kAliases[mid].alias);
+        if (cmp == 0) return kAliases[mid].id;
+        if (cmp  < 0) hi = mid;
+        else          lo = mid + 1u;
     }
-
     return INVALID;
+}
+
+
+Algorithm::Id Algorithm::parse(const char *name) noexcept
+{
+    if (!name) return INVALID;
+    return parse(std::string_view(name));
 }
 
 
 size_t Algorithm::count()
 {
-    return kAlgorithmNames.size();
+    return kNames.size();
 }
 
 
 std::vector<Algorithm> Algorithm::all(const std::function<bool(const Algorithm &algo)> &filter)
 {
     std::vector<Algorithm> out;
-    out.reserve(kAlgorithmNames.size());
+    out.reserve(kNames.size());
 
-    for (const auto &kv : kAlgorithmNames) {
-        Algorithm algo(kv.first);
+    std::ranges::for_each(kNames, [&](const NameEntry &entry) {
+        Algorithm algo(entry.id);
         if (!filter || filter(algo)) {
-            out.push_back(algo);
+            out.emplace_back(algo);
         }
-    }
+    });
 
     return out;
 }
