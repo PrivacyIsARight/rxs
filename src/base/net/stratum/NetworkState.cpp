@@ -89,7 +89,7 @@ inline static void printDiff(size_t i, uint64_t diff, uint64_t hashes)
     const double target = (i + 1) * 100.0;
     const int color     = effort > (target + 100.0) ? 1 : (effort > target ? 3 : 2);
 
-    Log::print("%3zu | %10s | " CSI "0;3%dm%8.2f" CLEAR " |", i + 1, NetworkState::humanDiff(diff).c_str(), color, effort);
+    Log::print("%3zu | %14s | " CSI "0;3%dm%9.2f%%" CLEAR " |", i + 1, Format::withCommas(diff).c_str(), color, effort);
 }
 
 
