@@ -216,7 +216,7 @@ void rxs::NetworkState::printResults() const
     }
 
     Log::print(SLATE_BOLD_S " - TOP 10");
-    Log::print(WHITE_BOLD_S "  # | DIFFICULTY | EFFORT %% |");
+    Log::print(WHITE_BOLD_S "  # |     DIFFICULTY |   EFFORT %% |");
 
     for (size_t i = 0; i < m_topDiff.size(); ++i) {
         printDiff(i, m_topDiff[i], m_hashes);
