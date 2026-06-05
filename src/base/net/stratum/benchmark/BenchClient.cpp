@@ -33,6 +33,7 @@
 #include "base/net/http/HttpListener.h"
 #include "base/net/stratum/benchmark/BenchConfig.h"
 #include "base/tools/Cvt.h"
+#include "base/tools/Format.h"
 #include "version.h"
 
 #ifdef RXS_FEATURE_DMI
@@ -260,10 +261,9 @@ void rxs::BenchClient::start()
 {
     const uint32_t size = BenchState::size();
 
-    LOG_NOTICE("%s " SLATE_BOLD("start benchmark ") "hashes " SAGE_BOLD("%u%s") " algo " WHITE_BOLD("%s"),
+    LOG_NOTICE("%s " SLATE_BOLD("start benchmark ") "hashes " SAGE_BOLD("%s") " algo " WHITE_BOLD("%s"),
                tag(),
-               size < 1000000 ? size / 1000 : size / 1000000,
-               size < 1000000 ? "K" : "M",
+               Format::withCommas(static_cast<uint64_t>(size)).c_str(),
                m_job.algorithm().name());
 
     m_listener->onLoginSuccess(this);

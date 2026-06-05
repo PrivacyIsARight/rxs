@@ -224,35 +224,15 @@ void rxs::NetworkState::printResults() const
 }
 
 
-const char *rxs::NetworkState::scaleDiff(uint64_t &diff)
+const char *rxs::NetworkState::scaleDiff(uint64_t &/*diff*/)
 {
-    if (diff >= 100000000000) {
-        diff /= 1000000000;
-
-        return "G";
-    }
-
-    if (diff >= 100000000) {
-        diff /= 1000000;
-
-        return "M";
-    }
-
-    if (diff >= 1000000) {
-        diff /= 1000;
-
-        return "K";
-    }
-
     return "";
 }
 
 
 std::string rxs::NetworkState::humanDiff(uint64_t diff)
 {
-    const char *scale = scaleDiff(diff);
-
-    return *scale ? std::to_string(diff) + scale : Format::withCommas(diff);
+    return Format::withCommas(diff);
 }
 
 

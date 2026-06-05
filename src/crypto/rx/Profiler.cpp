@@ -20,6 +20,7 @@
 #include "crypto/rx/Profiler.h"
 #include "base/io/log/Log.h"
 #include "base/io/log/Tags.h"
+#include "base/tools/Format.h"
 
 
 #include <cstring>
@@ -93,7 +94,7 @@ NOINLINE void ProfileScopeData::Init()
 
         if (t2 - t1 > 1000000000) {
             s_tscSpeed = (count2 - count1) * 1e9 / (t2 - t1);
-            LOG_INFO("%s TSC speed = %.3f GHz", rxs::Tags::profiler(), s_tscSpeed / 1e9);
+            LOG_INFO("%s TSC speed = %s Hz", rxs::Tags::profiler(), rxs::Format::withCommas(static_cast<uint64_t>(s_tscSpeed)).c_str());
             return;
         }
     }
