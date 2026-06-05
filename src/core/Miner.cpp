@@ -305,24 +305,12 @@ public:
 
         printProfile();
 
-        double scale  = 1.0;
         const char* h = "H/s";
 
         double maxHr = 0.0;
         auto it = maxHashrate.find(algorithm);
         if (it != maxHashrate.end()) {
             maxHr = it->second;
-        }
-
-        if ((speed[0].second >= 1e6) || (speed[1].second >= 1e6) || (speed[2].second >= 1e6) || (maxHr >= 1e6)) {
-            scale = 1e-6;
-
-            speed[0].second *= scale;
-            speed[1].second *= scale;
-            speed[2].second *= scale;
-            maxHr           *= scale;
-
-            h = "MH/s";
         }
 
         LOG_INFO("%s " MAUVE_BOLD("speed") " 10s/60s/15m " SAGE_BOLD("%s") SAGE(" %s %s ") SAGE_BOLD("%s") " max " SAGE_BOLD("%s %s"),
