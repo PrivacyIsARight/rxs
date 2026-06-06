@@ -27,20 +27,17 @@ jobs:
       with:
         persist-credentials: false
 
-    - name: Install Dependencies and GCC 14
+    - name: Install Dependencies and Clang 19
       if: matrix.language == 'c-cpp'
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          g++-14 \
-          gcc-14 \
+          clang-19 \
           libhwloc-dev \
           libuv1-dev \
           libssl-dev \
           make \
           cmake
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 \
-          --slave /usr/bin/g++ g++ /usr/bin/g++-14
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@c10b8064de6f491fea524254123dbe5e09572f13
@@ -57,7 +54,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake .. -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
         make -j$(nproc)
 
     - name: Perform CodeQL Analysis
