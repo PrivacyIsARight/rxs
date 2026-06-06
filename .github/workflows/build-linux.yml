@@ -8,12 +8,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     env:
-      CC: gcc-14
-      CXX: g++-14
+      CC: clang-19
+      CXX: clang++-19
 
     steps:
     - name: Checkout repository
@@ -31,19 +31,13 @@ jobs:
           make \
           cmake
 
-    - name: Ensure gcc-14 / g++-14 are available
+    - name: Install Clang 19
       run: |
-        if ! command -v gcc-14 > /dev/null 2>&1; then
-          echo "gcc-14 not found, installing..."
-          sudo apt-get install -y gcc-14 g++-14
-        fi
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 \
-          --slave /usr/bin/g++ g++ /usr/bin/g++-14
-        gcc --version
+        sudo apt-get install -y clang-19
 
     - name: Build
       run: |
         mkdir build
         cd build
-        cmake ..
+        cmake .. -DCMAKE_C_COMPILER=clang-19 -DCMAKE_CXX_COMPILER=clang++-19
         make -j$(nproc)
