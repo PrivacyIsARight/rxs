@@ -31,8 +31,6 @@ namespace rxs {
 
 
 static std::mutex mutex;
-constexpr size_t twoMiB = 2U * 1024U * 1024U;
-constexpr size_t oneGiB = 1024U * 1024U * 1024U;
 
 
 static bool sysfs_write(const std::string &path, uint64_t value)
