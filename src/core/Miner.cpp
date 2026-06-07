@@ -18,7 +18,6 @@
 
 #include <algorithm>
 #include <mutex>
-#include <thread>
 
 
 #include "core/Miner.h"
