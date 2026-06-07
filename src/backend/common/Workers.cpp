@@ -214,7 +214,6 @@ namespace rxs {
 template<>
 rxs::IWorker *rxs::Workers<CpuLaunchData>::create(Thread<CpuLaunchData> *handle)
 {
-#   ifdef RXS_MINER_PROJECT
     switch (handle->config().intensity) {
     case 1:
         return new CpuWorker<1>(handle->id(), handle->config());
@@ -236,11 +235,6 @@ rxs::IWorker *rxs::Workers<CpuLaunchData>::create(Thread<CpuLaunchData> *handle)
     }
 
     return nullptr;
-#   else
-    assert(handle->config().intensity == 1);
-
-    return new CpuWorker<1>(handle->id(), handle->config());
-#   endif
 }
 
 
