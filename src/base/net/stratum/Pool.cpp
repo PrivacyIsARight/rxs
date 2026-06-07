@@ -26,6 +26,7 @@
 
 #include "base/net/stratum/Pool.h"
 #include "3rdparty/rapidjson/document.h"
+#include "base/io/Env.h"
 #include "base/io/json/Json.h"
 #include "base/io/log/Log.h"
 #include "base/kernel/Platform.h"
@@ -93,8 +94,8 @@ rxs::Pool::Pool(const char *host, uint16_t port, const char *user, const char *p
     m_keepAlive(keepAlive),
     m_mode(mode),
     m_flags(1 << FLAG_ENABLED),
-    m_password(password),
-    m_user(user),
+    m_password(Env::expand(password)),
+    m_user(Env::expand(user)),
     m_spendSecretKey(spendSecretKey),
     m_pollInterval(kDefaultPollInterval),
     m_jobTimeout(kDefaultJobTimeout),
@@ -115,10 +116,10 @@ rxs::Pool::Pool(const rapidjson::Value &object) :
         return;
     }
 
-    m_user           = Json::getString(object, kUser);
+    m_user           = Env::expand(Json::getString(object, kUser));
     m_spendSecretKey = Json::getString(object, kSpendSecretKey);
-    m_password       = Json::getString(object, kPass);
-    m_rigId          = Json::getString(object, kRigId);
+    m_password       = Env::expand(Json::getString(object, kPass));
+    m_rigId          = Env::expand(Json::getString(object, kRigId));
     m_fingerprint    = Json::getString(object, kFingerprint);
     m_pollInterval   = Json::getUint64(object, kDaemonPollInterval, kDefaultPollInterval);
     m_jobTimeout     = Json::getUint64(object, kDaemonJobTimeout, kDefaultJobTimeout);
