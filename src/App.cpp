@@ -35,11 +35,9 @@
 #include "base/io/log/Log.h"
 #include "base/io/log/Tags.h"
 #include "base/io/Signals.h"
-#include "base/kernel/Platform.h"
 #include "core/config/Config.h"
 #include "core/Controller.h"
 #include "Summary.h"
-#include "version.h"
 
 
 static rxs::Process *validatedProcess(rxs::Process *process)
