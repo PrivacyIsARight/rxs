@@ -19,7 +19,6 @@
 #include "base/net/stratum/BaseClient.h"
 #include "3rdparty/fmt/core.h"
 #include "3rdparty/rapidjson/document.h"
-#include "base/io/Env.h"
 #include "base/io/log/Log.h"
 #include "base/io/log/Tags.h"
 #include "base/kernel/interfaces/IClientListener.h"
@@ -48,10 +47,10 @@ void rxs::BaseClient::setPool(const Pool &pool)
         return;
     }
 
-    m_pool      = pool;
-    m_user      = std::move(Env::expand(pool.user()));
-    m_password  = std::move(Env::expand(pool.password()));
-    m_rigId     = std::move(Env::expand(pool.rigId()));
+    m_pool     = pool;
+    m_user     = m_pool.user();
+    m_password = m_pool.password();
+    m_rigId    = m_pool.rigId();
 
     m_tag.clear();
     fmt::format_to(std::back_inserter(m_tag), "{} " CYAN_BOLD("{}"), Tags::network(), m_pool.url().data());
