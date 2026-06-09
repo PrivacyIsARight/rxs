@@ -51,7 +51,8 @@ static rxs::Process *validatedProcess(rxs::Process *process)
 rxs::App::App(Process *process) : m_controller(std::make_shared<Controller>(validatedProcess(process)))
 {
     [[assume(process != nullptr)]];
-    [[assume(m_controller != nullptr)]];
+    auto* const ctrl = m_controller.get();
+    [[assume(ctrl != nullptr)]];
 }
 
 rxs::App::~App()
@@ -62,7 +63,8 @@ rxs::App::~App()
 
 int rxs::App::exec()
 {
-    [[assume(m_controller != nullptr)]];
+    auto* const ctrl = m_controller.get();
+    [[assume(ctrl != nullptr)]];
     if (!m_controller->isReady()) [[unlikely]] {
         LOG_EMERG("no valid configuration found");
 
@@ -115,7 +117,8 @@ int rxs::App::exec()
 
 void rxs::App::onConsoleCommand(const char command)
 {
-    [[assume(m_controller != nullptr)]];
+    auto* const ctrl = m_controller.get();
+    [[assume(ctrl != nullptr)]];
 
     constexpr char ctrl_c = '\x03';
     if (command == ctrl_c) [[unlikely]] {
@@ -149,7 +152,8 @@ void rxs::App::close()
     if (m_isClosing.exchange(true)) {
         return;
     }
-    [[assume(m_controller != nullptr)]];
+    auto* const ctrl = m_controller.get();
+    [[assume(ctrl != nullptr)]];
     m_signals.reset();
     m_console.reset();
 
