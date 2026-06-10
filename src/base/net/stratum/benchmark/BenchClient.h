@@ -54,13 +54,13 @@ public:
     inline int64_t submit(const JobResult &) override                               { return 0; }
     inline void connect(const Pool &pool) override                                  { setPool(pool); }
     inline void deleteLater() override                                              { delete this; }
-    inline void setAlgo(const Algorithm &algo) override                             {}
-    inline void setEnabled(bool enabled) override                                   {}
-    inline void setProxy(const ProxyUrl &proxy) override                            {}
-    inline void setQuiet(bool quiet) override                                       {}
-    inline void setRetries(int retries) override                                    {}
-    inline void setRetryPause(uint64_t ms) override                                 {}
-    inline void tick(uint64_t now) override                                         {}
+    inline void setAlgo(const Algorithm &) override                                 {}
+    inline void setEnabled(bool) override                                           {}
+    inline void setProxy(const ProxyUrl &) override                                 {}
+    inline void setQuiet(bool) override                                             {}
+    inline void setRetries(int) override                                            {}
+    inline void setRetryPause(uint64_t) override                                    {}
+    inline void tick(uint64_t) override                                             {}
 
     const char *tag() const override;
     void connect() override;
