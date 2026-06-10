@@ -17,10 +17,10 @@
  */
 
 
-#include <cassert>
-#include <cstring>
-
-
+#include <algorithm>
+#include <array>
+#include <cctype>
+#include <string_view>
 
 
 #include "crypto/common/Assembly.h"
@@ -30,13 +30,22 @@
 namespace rxs {
 
 
-static const char *asmNames[] = {
+static constexpr std::array<std::string_view, Assembly::MAX> asmNames = {{
     "none",
     "auto",
     "intel",
     "ryzen",
     "bulldozer"
-};
+}};
+
+
+static bool iequal(std::string_view a, std::string_view b)
+{
+    return a.size() == b.size() &&
+           std::equal(a.begin(), a.end(), b.begin(), [](unsigned char x, unsigned char y) {
+               return std::tolower(x) == std::tolower(y);
+           });
+}
 
 
 } /* namespace rxs */
@@ -44,15 +53,14 @@ static const char *asmNames[] = {
 
 rxs::Assembly::Id rxs::Assembly::parse(const char *assembly, Id defaultValue)
 {
-    constexpr size_t const size = sizeof(asmNames) / sizeof((asmNames)[0]);
-    static_assert(size == MAX, "asmNames size mismatch");
+    static_assert(asmNames.size() == MAX, "asmNames size mismatch");
 
     if (assembly == nullptr) {
         return defaultValue;
     }
 
-    for (size_t i = 0; i < size; i++) {
-        if (strcasecmp(assembly, asmNames[i]) == 0) {
+    for (size_t i = 0; i < asmNames.size(); i++) {
+        if (iequal(assembly, asmNames[i])) {
             return static_cast<Id>(i);
         }
     }
@@ -77,7 +85,7 @@ rxs::Assembly::Id rxs::Assembly::parse(const rapidjson::Value &value, Id default
 
 const char *rxs::Assembly::toString() const
 {
-    return asmNames[m_id];
+    return asmNames[m_id].data();
 }
 
 
