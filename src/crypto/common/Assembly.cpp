@@ -85,7 +85,11 @@ rxs::Assembly::Id rxs::Assembly::parse(const rapidjson::Value &value, Id default
 
 const char *rxs::Assembly::toString() const
 {
-    return asmNames[m_id].data();
+    if (m_id < NONE || m_id >= MAX) {
+        return "invalid";
+    }
+
+    return asmNames[static_cast<size_t>(m_id)].data();
 }
 
 
