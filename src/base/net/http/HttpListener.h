@@ -29,9 +29,12 @@ namespace rxs {
 class HttpListener : public IHttpListener
 {
 public:
-    inline HttpListener(IHttpListener *listener, const char *tag = nullptr) :
+    inline HttpListener(IHttpListener *listener,
 #       ifdef APP_DEBUG
+        const char *tag = nullptr) :
         m_tag(tag),
+#       else
+        const char * = nullptr) :
 #       endif
         m_listener(listener)
     {}
