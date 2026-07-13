@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(rxs LANGUAGES C CXX ASM)
+project(rxs VERSION 0.0.1 LANGUAGES C CXX ASM)
 
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,6 +20,7 @@ option(WITH_VAES            "Enable VAES (AVX-512 + VAES) support" ON)
 option(WITH_BENCHMARK       "Enable builtin RandomX benchmark and stress test" ON)
 option(WITH_SECURE_JIT      "Enable secure access to JIT memory" OFF)
 option(WITH_DMI             "Enable DMI/SMBIOS reader" ON)
+option(ENABLE_MARCH_NATIVE  "Tune the binary for the build machine's CPU" ON)
 
 option(BUILD_STATIC         "Build static binary" OFF)
 option(ARM_V8               "Force ARMv8 (64 bit) architecture, use with caution if automatic detection fails, but you sure it may work" OFF)
@@ -98,12 +99,13 @@ if (WITH_HWLOC)
         )
 endif()
 
-list(APPEND SOURCES_OS
-    src/App_unix.cpp
-    src/crypto/common/VirtualMemory_unix.cpp
-    )
+list(APPEND SOURCES_OS src/App_unix.cpp src/crypto/common/VirtualMemory_unix.cpp)
 
-if (RXS_OS_ANDROID)
+if (RXS_OS_APPLE)
+    find_library(IOKIT_LIBRARY IOKit REQUIRED)
+    find_library(CORESERVICES_LIBRARY CoreServices REQUIRED)
+    set(EXTRA_LIBS ${IOKIT_LIBRARY} ${CORESERVICES_LIBRARY})
+elseif (RXS_OS_ANDROID)
     set(EXTRA_LIBS pthread rt dl log)
 elseif (RXS_OS_LINUX)
     list(APPEND SOURCES_OS
@@ -146,8 +148,28 @@ if (WITH_DEBUG_LOG)
     add_definitions(/DAPP_DEBUG)
 endif()
 
-add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${RXS_ASM_SOURCES})
+if (APPLE)
+    add_executable(${CMAKE_PROJECT_NAME} MACOSX_BUNDLE ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${RXS_ASM_SOURCES})
+    set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE_BUNDLE_NAME "rxs"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.privacyisaright.rxs"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/cmake/macos/Info.plist.in"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+    )
+else()
+    add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${RXS_ASM_SOURCES})
+endif()
 target_link_libraries(${CMAKE_PROJECT_NAME} ${RXS_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY})
+
+if (NOT WITH_EMBEDDED_CONFIG)
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/src/config.json"
+            "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/config.json"
+        COMMENT "Copying maximum-throughput configuration"
+    )
+endif()
 
 include(CheckIPOSupported)
 check_ipo_supported(RESULT ipo_supported OUTPUT ipo_output)
@@ -159,4 +181,18 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES Clang AND CMAKE_BUILD_TYPE STREQUAL Release AND NOT CMAKE_GENERATOR STREQUAL Xcode)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>")
+endif()
+
+if (APPLE)
+    configure_file("${CMAKE_SOURCE_DIR}/cmake/macos/rxs-launcher.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/rxs" @ONLY)
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E rename
+            "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>"
+            "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/rxs-bin"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_BINARY_DIR}/rxs"
+            "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/rxs"
+        COMMAND /bin/chmod +x "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/rxs"
+        COMMENT "Installing macOS app launcher"
+    )
 endif()

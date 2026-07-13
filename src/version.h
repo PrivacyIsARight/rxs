@@ -21,7 +21,9 @@
 #define APP_VER_MINOR 0
 #define APP_VER_PATCH 1
 
-#ifdef RXS_OS_ANDROID
+#ifdef RXS_OS_MACOS
+#    define APP_OS "macOS"
+#elif defined RXS_OS_ANDROID
 #    define APP_OS "Android"
 #elif defined RXS_OS_LINUX
 #    define APP_OS "Linux"

@@ -1,7 +1,21 @@
-set(RXS_OS_UNIX ON)
-add_definitions(-DRXS_OS_UNIX)
+if (APPLE)
+    set(RXS_OS_APPLE ON)
+    set(RXS_OS_MACOS ON)
+    add_definitions(-DRXS_OS_APPLE -DRXS_OS_MACOS)
 
-if (ANDROID OR CMAKE_SYSTEM_NAME MATCHES "Android")
+    # Apple Silicon requires the hardened W^X JIT API. RandomX toggles write
+    # protection while generating code and execute protection while hashing.
+    if (RXS_ARM)
+        set(WITH_SECURE_JIT ON)
+    endif()
+else()
+    set(RXS_OS_UNIX ON)
+    add_definitions(-DRXS_OS_UNIX)
+endif()
+
+if (RXS_OS_APPLE)
+    # Handled above.
+elseif (ANDROID OR CMAKE_SYSTEM_NAME MATCHES "Android")
     set(RXS_OS_ANDROID ON)
     add_definitions(-DRXS_OS_ANDROID)
 elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")

@@ -179,13 +179,24 @@ if (ARM_TARGET AND ARM_TARGET GREATER 6)
     message(STATUS "Use ARM_TARGET=${ARM_TARGET} (${CMAKE_SYSTEM_PROCESSOR})")
 
     if (ARM_TARGET EQUAL 8 AND (CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang))
-        CHECK_CXX_COMPILER_FLAG(-march=armv8-a+crypto RXS_ARM_CRYPTO)
+        if (APPLE AND ENABLE_MARCH_NATIVE AND NOT CMAKE_CROSSCOMPILING)
+            # Generic armv8 tuning leaves a substantial amount of performance
+            # on the table on Apple Silicon. Let Apple Clang select the exact
+            # instruction scheduling model and crypto extensions of the host.
+            set(ARM8_CXX_FLAGS "-mcpu=native")
+            set(RXS_ARM_CRYPTO ON)
+        else()
+            CHECK_CXX_COMPILER_FLAG(-march=armv8-a+crypto RXS_ARM_CRYPTO)
+
+            if (RXS_ARM_CRYPTO)
+                set(ARM8_CXX_FLAGS "-march=armv8-a+crypto")
+            else()
+                set(ARM8_CXX_FLAGS "-march=armv8-a")
+            endif()
+        endif()
 
         if (RXS_ARM_CRYPTO)
             add_definitions(-DRXS_ARM_CRYPTO)
-            set(ARM8_CXX_FLAGS "-march=armv8-a+crypto")
-        else()
-            set(ARM8_CXX_FLAGS "-march=armv8-a")
         endif()
     endif()
 endif()

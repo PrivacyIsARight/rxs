@@ -1,0 +1,38 @@
+#!/bin/zsh
+set -euo pipefail
+
+bundle_dir="${0:A:h}"
+binary="${bundle_dir}/rxs-bin"
+template="${bundle_dir}/config.json"
+config_dir="${HOME}/Library/Application Support/rxs"
+config="${config_dir}/config.json"
+
+if [[ ! -t 1 ]]; then
+    open -a Terminal "$0"
+    exit 0
+fi
+
+if [[ ! -x "${binary}" || ! -f "${template}" ]]; then
+    print -u2 "rxs.app is incomplete. Rebuild or reinstall the app."
+    exit 1
+fi
+
+if [[ ! -f "${config}" ]]; then
+    print ""
+    print "First-run setup"
+    print "Paste the primary Monero address that should receive payouts."
+    print "It must start with 4 and be 95 characters long."
+    read "wallet?Wallet: "
+
+    if [[ ! "${wallet}" =~ '^4[1-9A-HJ-NP-Za-km-z]{94}$' ]]; then
+        print -u2 "That is not a valid primary Monero address. No configuration was saved."
+        exit 1
+    fi
+
+    mkdir -p "${config_dir}"
+    sed "s|\${XMR_WALLET}|${wallet}|g" "${template}" > "${config}"
+    chmod 600 "${config}"
+    print "Saved configuration to ${config}"
+fi
+
+exec "${binary}" --config "${config}" "$@"

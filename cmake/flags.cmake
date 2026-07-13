@@ -5,8 +5,6 @@ set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-option(ENABLE_MARCH_NATIVE "Enable -march=native for native CPU optimizations" ON)
-
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
     set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -19,10 +17,10 @@ include(CheckSymbolExists)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic -Wno-strict-aliasing")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -fexceptions -fno-rtti -Wno-strict-aliasing -Wno-class-memaccess")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
     if (ARM_TARGET EQUAL 8)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARM8_CXX_FLAGS}")
@@ -58,10 +56,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
 elseif (CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Weverything")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -funroll-loops -fomit-frame-pointer")
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -fexceptions -fno-rtti")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -funroll-loops -fomit-frame-pointer")
 
     if (ARM_TARGET EQUAL 8)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARM8_CXX_FLAGS}")

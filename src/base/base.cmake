@@ -144,9 +144,14 @@ set(SOURCES_BASE
 
 set(SOURCES_OS
     src/base/io/json/Json_unix.cpp
-    src/base/kernel/Platform_unix.cpp
     src/base/kernel/Process_unix.cpp
     )
+
+if (RXS_OS_APPLE)
+    list(APPEND SOURCES_OS src/base/kernel/Platform_mac.cpp)
+else()
+    list(APPEND SOURCES_OS src/base/kernel/Platform_unix.cpp)
+endif()
 
 if (WITH_HWLOC)
     list(APPEND SOURCES_OS

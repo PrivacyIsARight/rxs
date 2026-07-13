@@ -48,10 +48,14 @@ if (RXS_RISCV)
 elseif (RXS_ARM)
     list(APPEND SOURCES_BACKEND_CPU src/backend/cpu/platform/BasicCpuInfo_arm.cpp)
 
-    list(APPEND SOURCES_BACKEND_CPU
-        src/backend/cpu/platform/lscpu_arm.cpp
-        src/backend/cpu/platform/BasicCpuInfo_arm_unix.cpp
-    )
+    if (RXS_OS_APPLE)
+        list(APPEND SOURCES_BACKEND_CPU src/backend/cpu/platform/BasicCpuInfo_arm_mac.cpp)
+    else()
+        list(APPEND SOURCES_BACKEND_CPU
+            src/backend/cpu/platform/lscpu_arm.cpp
+            src/backend/cpu/platform/BasicCpuInfo_arm_unix.cpp
+        )
+    endif()
 else()
     list(APPEND SOURCES_BACKEND_CPU src/backend/cpu/platform/BasicCpuInfo.cpp)
 endif()
