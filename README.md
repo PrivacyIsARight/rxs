@@ -12,4 +12,4 @@ For KawPow, CryptoNight, GhostRider, Windows, or macOS support, use XMRig instea
 ## Donations
 
 rxs does not mine donations and never will. All of your processing power goes toward mining for yourself.
-If you would like to support rxs, donate monero to: `83B6mR22EkZRPdauz6gPzJBXxQa7ksjs2AyhsAeuKGYKXz3euapMU7Bgp47ufNZeArhnAUP2tkqKu42bCumdorPRTswZcTb`
+If you would like to support rxs, donate monero to: `88dZwn3jK42Qwx2o2RcgvPcv7UWHLHNQT41TL8cfH37C6UCi97LScRa1xkKfvQaS8H8eiiccqV9Jvaooz7qwRjeG2L8hNS5`
